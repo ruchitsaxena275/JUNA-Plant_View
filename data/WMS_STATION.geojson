@@ -1,0 +1,12 @@
+{
+"type": "FeatureCollection",
+"name": "WMS STATION",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": "kml_5", "Name": "WMS 1", "description": null, "timestamp": null, "begin": null, "end": null, "altitudeMode": null, "tessellate": -1, "extrude": 0, "visibility": -1, "drawOrder": null, "icon": null }, "geometry": { "type": "Point", "coordinates": [ 73.126877653494304, 28.142252688503099, 0.0 ] } },
+{ "type": "Feature", "properties": { "id": "kml_4", "Name": "WMS 2", "description": null, "timestamp": null, "begin": null, "end": null, "altitudeMode": null, "tessellate": -1, "extrude": 0, "visibility": -1, "drawOrder": null, "icon": null }, "geometry": { "type": "Point", "coordinates": [ 73.137546818292194, 28.148838405015901, 0.0 ] } },
+{ "type": "Feature", "properties": { "id": "kml_3", "Name": "WMS 3", "description": null, "timestamp": null, "begin": null, "end": null, "altitudeMode": null, "tessellate": -1, "extrude": 0, "visibility": -1, "drawOrder": null, "icon": null }, "geometry": { "type": "Point", "coordinates": [ 73.143684205086601, 28.155633498131099, 0.0 ] } },
+{ "type": "Feature", "properties": { "id": "kml_2", "Name": "WMS 4", "description": null, "timestamp": null, "begin": null, "end": null, "altitudeMode": null, "tessellate": -1, "extrude": 0, "visibility": -1, "drawOrder": null, "icon": null }, "geometry": { "type": "Point", "coordinates": [ 73.143055689909403, 28.1630756756647, 0.0 ] } },
+{ "type": "Feature", "properties": { "id": "kml_1", "Name": "WMS 5", "description": null, "timestamp": null, "begin": null, "end": null, "altitudeMode": null, "tessellate": -1, "extrude": 0, "visibility": -1, "drawOrder": null, "icon": null }, "geometry": { "type": "Point", "coordinates": [ 73.154267938644907, 28.1674433115863, 0.0 ] } }
+]
+}
