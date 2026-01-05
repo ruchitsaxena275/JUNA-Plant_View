@@ -110,19 +110,52 @@ for (let i = 1; i <= 20; i++) {
   }, `ITC-${i} Strings`);
 }
 
-// ================= GPS / LIVE LOCATION =================
-map.locate({ setView: false });
+// ================= GPS / REAL-TIME LOCATION (HIGH ACCURACY) =================
 
-map.on("locationfound", e => {
-  L.circleMarker(e.latlng, {
-    radius: 7,
-    color: "green",
-    fillOpacity: 0.8
-  })
-    .bindPopup("📍 You are here")
-    .addTo(map);
-});
+// Single marker for live location
+let liveLocationMarker = L.circleMarker([0, 0], {
+  radius: 7,
+  color: "green",
+  fillColor: "green",
+  fillOpacity: 0.9
+}).addTo(map);
 
-map.on("locationerror", () => {
-  console.warn("Location access denied");
-});
+// Success callback
+function onLocationSuccess(position) {
+  const lat = position.coords.latitude;
+  const lng = position.coords.longitude;
+  const accuracy = position.coords.accuracy;
+
+  console.log("GPS:", lat, lng, "Accuracy:", accuracy, "m");
+
+  const latlng = [lat, lng];
+
+  liveLocationMarker
+    .setLatLng(latlng)
+    .bindPopup(`📍 You are here<br>Accuracy: ${accuracy.toFixed(1)} m`);
+
+  // Auto-center only when accuracy is acceptable
+  if (accuracy < 15) {
+    map.setView(latlng, 18);
+  }
+}
+
+// Error callback
+function onLocationError(err) {
+  console.warn("GPS error:", err.message);
+}
+
+// Start high-accuracy GPS tracking
+if ("geolocation" in navigator) {
+  navigator.geolocation.watchPosition(
+    onLocationSuccess,
+    onLocationError,
+    {
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: 10000
+    }
+  );
+} else {
+  console.warn("Geolocation not supported by browser");
+}
