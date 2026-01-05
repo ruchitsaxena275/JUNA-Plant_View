@@ -1,39 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Solar Plant Tracker Map</title>
+<meta charset="UTF-8">
+<title>Solar Plant Web Map</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Leaflet -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-  <!-- Leaflet Search -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css"
-  />
+<style>
+html, body {
+  height: 100%;
+  margin: 0;
+}
 
-  <link rel="stylesheet" href="style.css" />
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+/* 🔍 Search Panel */
+.search-box {
+  position: fixed;
+  bottom: 70px;
+  left: 10px;
+  right: 10px;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  z-index: 9999;
+  font-size: 13px;
+}
+
+.search-box h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.search-box select {
+  width: 100%;
+  margin: 5px 0;
+  padding: 6px;
+}
+
+.search-box label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+</style>
 </head>
 
 <body>
-  <header>
-    <img src="assets/company_logo.png" alt="Company Logo" />
-    <h1>Solar Plant Tracker Map</h1>
-  </header>
 
-  <div id="map"></div>
+<div id="map"></div>
 
-  <footer>
-    Developed by <b>Ruchit Saxena</b>
-  </footer>
+<!-- 🔍 Hierarchical Search -->
+<div id="hierarchySearch" class="search-box">
 
-  <!-- Scripts -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.js"></script>
-  <script src="app.js"></script>
-</body>
-</html>
+  <h3>Search</h3>
+
+  <label>
+    <input type="radio" name="searchMode" value="full" checked>
+    ITC → INV → SCB → STRING
+  </label>
+
+  <label>
+    <input type="radio" name="searchMode" value="scb">
+    ITC → INV → SCB
+  </label>
+
+  <hr>
+
+  <select id="itcSelect">
+    <option value="">Select ITC</option>
+  </select>
+
+  <select id="invSelect" disabled>
+    <option value="">Select INV</option>
+  </select>
+
+  <select id="scbSelect" disabled>
+    <option
