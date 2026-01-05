@@ -34,7 +34,7 @@ loadGeoJSON("data/Road.geojson", {
 // ================= SCB =================
 let scbLayer;
 
-fetch("data/SCB.geojson")
+fetch("scb.geojson")
   .then(r => r.json())
   .then(data => {
     scbLayer = L.geoJSON(data, {
@@ -126,3 +126,4 @@ map.on("locationfound", e => {
 map.on("locationerror", () => {
   console.warn("Location access denied");
 });
+
