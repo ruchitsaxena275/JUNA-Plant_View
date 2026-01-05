@@ -82,4 +82,177 @@ html, body {
   </select>
 
   <select id="scbSelect" disabled>
-    <option
+    <option value="">Select SCB</option>
+  </select>
+
+  <select id="stringSelect">
+    <option value="">Select STRING</option>
+  </select>
+
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+/* =========================
+   MAP INITIALIZATION
+========================= */
+const map = L.map("map").setView([28.02, 73.30], 16);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 20
+}).addTo(map);
+
+/* =========================
+   REAL-TIME GPS (AUTO UPDATE)
+========================= */
+let liveMarker = null;
+
+if (navigator.geolocation) {
+  navigator.geolocation.watchPosition(
+    pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      if (!liveMarker) {
+        liveMarker = L.circleMarker([lat, lng], {
+          radius: 8,
+          color: "blue",
+          fillColor: "cyan",
+          fillOpacity: 1
+        }).addTo(map);
+
+        map.setView([lat, lng], 18);
+      } else {
+        liveMarker.setLatLng([lat, lng]);
+      }
+    },
+    err => console.error(err),
+    { enableHighAccuracy: true }
+  );
+}
+
+/* =========================
+   SCB GEOJSON (REPLACE PATH)
+========================= */
+const scbLayer = L.geoJSON(null, {
+  onEachFeature: (f, l) => {
+    l.bindPopup(`
+      <b>ITC:</b> ${f.properties.itc}<br>
+      <b>INV:</b> ${f.properties.inv}<br>
+      <b>SCB:</b> ${f.properties.scb}<br>
+      <b>STRING:</b> ${f.properties.string}
+    `);
+  }
+}).addTo(map);
+
+/* 🔴 CHANGE FILE NAME HERE */
+fetch("scb.geojson")
+  .then(res => res.json())
+  .then(data => {
+    scbLayer.addData(data);
+    populateITC();
+  });
+
+/* =========================
+   SEARCH LOGIC
+========================= */
+const itcSelect = document.getElementById("itcSelect");
+const invSelect = document.getElementById("invSelect");
+const scbSelect = document.getElementById("scbSelect");
+const stringSelect = document.getElementById("stringSelect");
+
+function getUnique(prop, cond = () => true) {
+  const s = new Set();
+  scbLayer.eachLayer(l => {
+    const p = l.feature.properties;
+    if (cond(p)) s.add(p[prop]);
+  });
+  return [...s].sort();
+}
+
+function populateITC() {
+  getUnique("itc").forEach(v =>
+    itcSelect.add(new Option(v, v))
+  );
+}
+
+/* ITC → INV */
+itcSelect.onchange = () => {
+  invSelect.innerHTML = '<option value="">Select INV</option>';
+  scbSelect.innerHTML = '<option value="">Select SCB</option>';
+  stringSelect.innerHTML = '<option value="">Select STRING</option>';
+
+  invSelect.disabled = false;
+  scbSelect.disabled = true;
+  stringSelect.disabled = true;
+
+  getUnique("inv", p => p.itc === itcSelect.value)
+    .forEach(v => invSelect.add(new Option(v, v)));
+
+  filterMap();
+};
+
+/* INV → SCB */
+invSelect.onchange = () => {
+  scbSelect.innerHTML = '<option value="">Select SCB</option>';
+  stringSelect.innerHTML = '<option value="">Select STRING</option>';
+
+  scbSelect.disabled = false;
+  stringSelect.disabled = true;
+
+  getUnique("scb", p =>
+    p.itc === itcSelect.value &&
+    p.inv === invSelect.value
+  ).forEach(v => scbSelect.add(new Option(v, v)));
+
+  filterMap();
+};
+
+/* SCB → STRING */
+scbSelect.onchange = () => {
+  const mode = document.querySelector('input[name="searchMode"]:checked').value;
+
+  if (mode === "full") {
+    stringSelect.disabled = false;
+    stringSelect.innerHTML = '<option value="">Select STRING</option>';
+
+    getUnique("string", p =>
+      p.itc === itcSelect.value &&
+      p.inv === invSelect.value &&
+      p.scb === scbSelect.value
+    ).forEach(v => stringSelect.add(new Option(v, v)));
+  }
+
+  filterMap();
+};
+
+stringSelect.onchange = filterMap;
+
+/* Mode switch */
+document.querySelectorAll('input[name="searchMode"]').forEach(r => {
+  r.onchange = () => {
+    stringSelect.style.display =
+      r.value === "scb" ? "none" : "block";
+  };
+});
+
+/* Final Filter */
+function filterMap() {
+  scbLayer.eachLayer(l => {
+    const p = l.feature.properties;
+
+    const show =
+      (!itcSelect.value || p.itc === itcSelect.value) &&
+      (!invSelect.value || p.inv === invSelect.value) &&
+      (!scbSelect.value || p.scb === scbSelect.value) &&
+      (!stringSelect.value || p.string === stringSelect.value);
+
+    show ? l.addTo(map) : map.removeLayer(l);
+  });
+}
+</script>
+
+</body>
+</html>
