@@ -1,46 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet.locatecontrol/dist/L.Control.Locate.min.css"
-/>
-
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <title>Solar Plant Tracker Map</title>
 
-<div id="search-panel">
-  <input id="stringSearch" placeholder="Search String (e.g. ITC1-INV2-SCB7-S15)">
-  <button onclick="searchString()">Search String</button>
-
-  <input id="scbSearch" placeholder="Search SCB (e.g. SCB 6.4.18)">
-  <button onclick="searchSCB()">Search SCB</button>
-</div>
-
-
+  <!-- Leaflet -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
 
+  <!-- Leaflet Search -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css"
+  />
+
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
+  <header>
+    <img src="assets/company_logo.png" alt="Company Logo" />
+    <h1>Solar Plant Tracker Map</h1>
+  </header>
 
-<header>
-  <img src="data/assets/company_logo.png" alt="Company Logo">
-  <h2>Solar Plant Tracker Map</h2>
-</header>
+  <div id="map"></div>
 
-<div id="map"></div>
+  <footer>
+    Developed by <b>Ruchit Saxena</b>
+  </footer>
 
-<footer>
-  Developed by <b>Ruchit Saxena</b>
-</footer>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.js"></script>
-
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
-
