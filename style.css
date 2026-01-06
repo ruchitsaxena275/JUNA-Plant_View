@@ -25,3 +25,23 @@ footer {
   border-top: 1px solid #ccc;
   font-size: 14px;
 }
+
+/* ================= ADDED ONLY (DO NOT REMOVE) ================= */
+
+/* Power Block / ITC text labels */
+.leaflet-tooltip.pb-label {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #000;
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #000;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+/* Prevent tooltip blocking clicks */
+.leaflet-tooltip {
+  pointer-events: none;
+}
