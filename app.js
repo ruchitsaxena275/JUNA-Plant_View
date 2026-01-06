@@ -57,6 +57,36 @@ fetch("data/SCB.geojson")
     }).addTo(map);
   });
 
+// ================= POWER STATION / ITC NUMBERS =================
+fetch("data/Power_station_numbers.geojson")
+  .then(r => {
+    if (!r.ok) throw new Error("Power_station_numbers.geojson not found");
+    return r.json();
+  })
+  .then(data => {
+    const itcNumberLayer = L.geoJSON(data, {
+      pointToLayer: (f, latlng) =>
+        L.circleMarker(latlng, {
+          radius: 6,
+          color: "#000",
+          weight: 1,
+          fillColor: "#FFD700",
+          fillOpacity: 1
+        }),
+      onEachFeature: (f, l) => {
+        // THIS IS THE IMPORTANT LINE
+        l.bindTooltip(f.properties.Name, {
+          permanent: true,
+          direction: "center",
+          className: "itc-label"
+        });
+      }
+    }).addTo(map);
+
+    console.log("ITC number layer loaded:", data.features.length);
+  })
+  .catch(err => console.error("ITC number layer error:", err));
+
 // ================= TRACKERS =================
 let trackerLayer;
 
@@ -159,3 +189,4 @@ if ("geolocation" in navigator) {
 } else {
   console.warn("Geolocation not supported by browser");
 }
+
