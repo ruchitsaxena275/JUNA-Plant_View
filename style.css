@@ -26,22 +26,32 @@ footer {
   font-size: 14px;
 }
 
-/* ================= ADDED ONLY (DO NOT REMOVE) ================= */
+/* ================= ITC / POWER BLOCK LABEL STYLE ================= */
 
-/* Power Block / ITC text labels */
-.leaflet-tooltip.itc-label {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid #000;
-  border-radius: 3px;
-  padding: 2px 4px;
-  font-size: 12px;
+/* Main ITC label (yellow style like your image) */
+.leaflet-tooltip.pb-label {
+  background: #ffd54f;              /* Yellow */
+  border: 2px solid #000;           /* Black border */
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 14px;
   font-weight: bold;
   color: #000;
-  box-shadow: none;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.35);
   white-space: nowrap;
+  text-align: center;
 }
 
-/* Prevent tooltip blocking clicks */
+/* Remove default Leaflet tooltip arrow */
+.leaflet-tooltip.pb-label::before {
+  display: none;
+}
+
+/* Make labels float cleanly */
 .leaflet-tooltip {
   pointer-events: none;
 }
+
+/* Optional: slight hover glow (looks premium on mobile) */
+.leaflet-tooltip.pb-label:hover {
+  box-shadow: 3px 3px 6px rgba(0,0,0,0.4
