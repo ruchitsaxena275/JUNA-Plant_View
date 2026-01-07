@@ -190,3 +190,76 @@ if ("geolocation" in navigator) {
   console.warn("Geolocation not supported by browser");
 }
 
+// ================= SEARCH UI LOGIC =================
+
+// Utility to fill dropdowns
+function fillSelect(id, prefix, start, end) {
+  const sel = document.getElementById(id);
+  for (let i = start; i <= end; i++) {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = prefix + i;
+    sel.appendChild(opt);
+  }
+}
+
+/* ---------- STRING SEARCH DROPDOWNS ---------- */
+fillSelect("itcSelect", "ITC-", 1, 20);
+fillSelect("invSelect", "INV-", 1, 4);
+fillSelect("scbSelect", "SCB-", 1, 18);
+fillSelect("stringSelect", "S", 1, 19);
+
+/* ---------- SCB SEARCH DROPDOWNS ---------- */
+fillSelect("itcSelectScb", "ITC-", 1, 20);
+fillSelect("invSelectScb", "INV-", 1, 4);
+fillSelect("scbSelectOnly", "SCB-", 1, 18);
+
+// ================= STRING SEARCH =================
+function searchString() {
+  const itc = document.getElementById("itcSelect").value;
+  const inv = document.getElementById("invSelect").value;
+  const scb = document.getElementById("scbSelect").value;
+  const str = document.getElementById("stringSelect").value;
+
+  const target = `ITC${itc}-INV${inv}-SCB${scb}-S${str}`;
+  let found = false;
+
+  trackerLayer.eachLayer(layer => {
+    const p = layer.feature.properties;
+
+    if (
+      p.string_1 === target ||
+      p.string_2 === target ||
+      p.string_3 === target ||
+      p.string_4 === target
+    ) {
+      map.setView(layer.getLatLng(), 19);
+      layer.openPopup();
+      found = true;
+    }
+  });
+
+  if (!found) alert("❌ String not found");
+}
+
+// ================= SCB SEARCH =================
+function searchSCB() {
+  const itc = document.getElementById("itcSelectScb").value;
+  const inv = document.getElementById("invSelectScb").value;
+  const scb = document.getElementById("scbSelectOnly").value;
+
+  const target = `SCB ${itc}.${inv}.${scb}`;
+  let found = false;
+
+  scbLayer.eachLayer(layer => {
+    if (layer.feature.properties.Name === target) {
+      map.setView(layer.getLatLng(), 19);
+      layer.openPopup();
+      found = true;
+    }
+  });
+
+  if (!found) alert("❌ SCB not found");
+}
+
+
