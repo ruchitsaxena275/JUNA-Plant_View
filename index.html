@@ -19,6 +19,28 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 
+  <!-- ================= SEARCH PANEL ================= -->
+<div id="search-panel">
+  <h3>🔎 String Search</h3>
+
+  <select id="itcSelect"></select>
+  <select id="invSelect"></select>
+  <select id="scbSelect"></select>
+  <select id="stringSelect"></select>
+
+  <button onclick="searchString()">Search String</button>
+
+  <hr>
+
+  <h3>🔎 SCB Search</h3>
+
+  <select id="itcSelectScb"></select>
+  <select id="invSelectScb"></select>
+  <select id="scbSelectOnly"></select>
+
+  <button onclick="searchSCB()">Search SCB</button>
+</div>
+
 <body>
   <header>
     <img src="assets/company_logo.png" alt="Company Logo" />
@@ -37,3 +59,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+
