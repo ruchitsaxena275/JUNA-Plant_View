@@ -51,7 +51,47 @@ footer {
 .leaflet-tooltip {
   pointer-events: none;
 }
+/* ================= SEARCH PANEL ================= */
+
+#search-panel {
+  position: absolute;
+  top: 120px;
+  left: 10px;
+  background: #ffffff;
+  padding: 10px;
+  z-index: 9999;
+  width: 230px;
+  border: 2px solid #000;
+  border-radius: 6px;
+}
+
+#search-panel h3 {
+  margin: 6px 0;
+  font-size: 14px;
+  text-align: center;
+}
+
+#search-panel select,
+#search-panel button {
+  width: 100%;
+  margin-bottom: 6px;
+  padding: 8px;
+  font-size: 15px;
+}
+
+#search-panel button {
+  background: #2c7be5;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#search-panel button:hover {
+  background: #1a5fb4;
+}
 
 /* Optional: slight hover glow (looks premium on mobile) */
 .leaflet-tooltip.pb-label:hover {
   box-shadow: 3px 3px 6px rgba(0,0,0,0.4
+
