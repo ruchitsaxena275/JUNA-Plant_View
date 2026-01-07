@@ -190,29 +190,36 @@ if ("geolocation" in navigator) {
   console.warn("Geolocation not supported by browser");
 }
 
-// ================= SEARCH UI LOGIC =================
+// ================= SEARCH UI LOGIC (FIXED) =================
+document.addEventListener("DOMContentLoaded", () => {
 
-// Utility to fill dropdowns
-function fillSelect(id, prefix, start, end) {
-  const sel = document.getElementById(id);
-  for (let i = start; i <= end; i++) {
-    const opt = document.createElement("option");
-    opt.value = i;
-    opt.textContent = prefix + i;
-    sel.appendChild(opt);
+  // Utility to fill dropdowns
+  function fillSelect(id, prefix, start, end) {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+
+    sel.innerHTML = ""; // safety clear
+
+    for (let i = start; i <= end; i++) {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = prefix + i;
+      sel.appendChild(opt);
+    }
   }
-}
 
-/* ---------- STRING SEARCH DROPDOWNS ---------- */
-fillSelect("itcSelect", "ITC-", 1, 20);
-fillSelect("invSelect", "INV-", 1, 4);
-fillSelect("scbSelect", "SCB-", 1, 18);
-fillSelect("stringSelect", "S", 1, 19);
+  /* ---------- STRING SEARCH DROPDOWNS ---------- */
+  fillSelect("itcSelect", "ITC-", 1, 20);
+  fillSelect("invSelect", "INV-", 1, 4);
+  fillSelect("scbSelect", "SCB-", 1, 18);
+  fillSelect("stringSelect", "S", 1, 19);
 
-/* ---------- SCB SEARCH DROPDOWNS ---------- */
-fillSelect("itcSelectScb", "ITC-", 1, 20);
-fillSelect("invSelectScb", "INV-", 1, 4);
-fillSelect("scbSelectOnly", "SCB-", 1, 18);
+  /* ---------- SCB SEARCH DROPDOWNS ---------- */
+  fillSelect("itcSelectScb", "ITC-", 1, 20);
+  fillSelect("invSelectScb", "INV-", 1, 4);
+  fillSelect("scbSelectOnly", "SCB-", 1, 18);
+});
+
 
 // ================= STRING SEARCH =================
 function searchString() {
@@ -241,6 +248,7 @@ function searchString() {
 
   if (!found) alert("❌ String not found");
 }
+
 
 // ================= SCB SEARCH =================
 function searchSCB() {
