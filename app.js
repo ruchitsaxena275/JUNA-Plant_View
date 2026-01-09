@@ -272,7 +272,7 @@ function searchSCB() {
   const inv = document.getElementById("invSelectScb").value;
   const scb = document.getElementById("scbSelectOnly").value;
 
-  const target = `SCB ${itc}.${inv}.${scb}`;
+  const target = `SCB ${itc}.${inv}.${pad2(scb)}`;
   let found = false;
 
   scbLayer.eachLayer(layer => {
@@ -294,6 +294,7 @@ function searchSCB() {
     alert("❌ SCB not found:\n" + target);
   }
 }
+
 
 
 
