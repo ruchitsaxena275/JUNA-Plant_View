@@ -228,7 +228,7 @@ function searchString() {
   const scb = document.getElementById("scbSelect").value;
   const str = document.getElementById("stringSelect").value;
 
-  const target = `ITC${itc}-INV${inv}-SCB${scb}-${str}`;
+  const target = `ITC${itc}-INV${inv}-SCB${scb}-S${str}`;
   let found = false;
 
   trackerLayer.eachLayer(layer => {
@@ -294,6 +294,7 @@ function searchSCB() {
     alert("❌ SCB not found:\n" + target);
   }
 }
+
 
 
 
