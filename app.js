@@ -228,7 +228,9 @@ function searchString() {
   const scb = document.getElementById("scbSelect").value;
   const str = document.getElementById("stringSelect").value;
 
-  const target = `ITC${itc}-INV${inv}-SCB${scb}-S${str}`;
+  // 🔧 FIXED FORMAT (matches your GeoJSON exactly)
+  const target = `ITC${itc}-INV${inv}-SCB${scb}-${str}`;
+
   let found = false;
 
   trackerLayer.eachLayer(layer => {
@@ -246,9 +248,10 @@ function searchString() {
     }
   });
 
-  if (!found) alert("❌ String not found");
+  if (!found) {
+    alert("❌ String not found:\n" + target);
+  }
 }
-
 
 // ================= SCB SEARCH =================
 function searchSCB() {
@@ -267,7 +270,10 @@ function searchSCB() {
     }
   });
 
-  if (!found) alert("❌ SCB not found");
+  if (!found) {
+    alert("❌ SCB not found:\n" + target);
+  }
 }
+
 
 
