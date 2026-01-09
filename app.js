@@ -266,78 +266,91 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ================= STRING SEARCH =================
 function searchString() {
-  const itc = document.getElementById("itcSelect").value;
-  const inv = document.getElementById("invSelect").value;
-  const scb = document.getElementById("scbSelect").value;
-  const str = document.getElementById("stringSelect").value;
+  const itc = document.getElementById("string-itc").value;
+  const inv = document.getElementById("string-inv").value;
+  const scb = document.getElementById("string-scb").value;
+  const s = document.getElementById("string-s").value;
 
-  const target = `ITC${itc}-INV${inv}-SCB${scb}-S${str}`;
-  let found = false;
+  const targetString = `${itc}-${inv}-${scb}-${s}`;
+
+  let foundLayer = null;
 
   trackerLayer.eachLayer(layer => {
-    const f = layer.feature;
-    if (!f || !f.properties) return;
+    const p = layer.feature?.properties;
+    if (!p) return;
 
-    const p = f.properties;
+    const strings = [
+      p.string_1,
+      p.string_2,
+      p.string_3,
+      p.string_4
+    ];
 
-    if (
-      p.string_1 === target ||
-      p.string_2 === target ||
-      p.string_3 === target ||
-      p.string_4 === target
-    ) {
-      let center;
-
-      // ✅ SAFE geometry handling
-      if (layer.getLatLng) {
-        center = layer.getLatLng(); // Point
-      } else if (layer.getBounds) {
-        center = layer.getBounds().getCenter(); // Polygon / Buffer
-      } else {
-        return;
-      }
-
-      map.setView(center, 19);
-      layer.openPopup();
-      found = true;
+    if (strings.includes(targetString)) {
+      foundLayer = layer;
     }
-    drawRouteToTarget(latlng);
   });
 
-  if (!found) {
-    alert("❌ String not found:\n" + target);
+  if (!foundLayer) {
+    alert("❌ String not found:\n" + targetString);
+    return;
   }
+
+  // ✅ SAFE LatLng extraction
+  let targetLatLng = null;
+
+  if (foundLayer.getLatLng) {
+    targetLatLng = foundLayer.getLatLng();
+  } else if (foundLayer.getBounds) {
+    targetLatLng = foundLayer.getBounds().getCenter();
+  }
+
+  if (!targetLatLng) {
+    alert("❌ Location not found for routing");
+    return;
+  }
+
+  foundLayer.openPopup();
+  map.setView(targetLatLng, 19);
+
+  drawRouteToTarget(targetLatLng);
 }
+
 
 
 // ================= SCB SEARCH =================
 function searchSCB() {
-  const itc = document.getElementById("itcSelectScb").value;
-  const inv = document.getElementById("invSelectScb").value;
-  const scb = document.getElementById("scbSelectOnly").value;
+  const itc = document.getElementById("scb-itc").value.replace("ITC-", "");
+  const inv = document.getElementById("scb-inv").value.replace("INV-", "");
+  let scb = document.getElementById("scb-scb").value.replace("SCB-", "");
 
-  const target = `SCB ${itc}.${inv}.${pad2(scb)}`;
-  let found = false;
+  // Pad SCB number (1 → 01)
+  scb = scb.padStart(2, "0");
+
+  const targetSCB = `SCB ${itc}.${inv}.${scb}`;
+
+  let foundLayer = null;
 
   scbLayer.eachLayer(layer => {
-    const f = layer.feature;
-    if (!f || !f.properties) return;
-
-    if (f.properties.Name === target) {
-      const center = layer.getLatLng
-        ? layer.getLatLng()
-        : layer.getBounds().getCenter();
-
-      map.setView(center, 19);
-      layer.openPopup();
-      found = true;
+    const name = layer.feature?.properties?.Name;
+    if (name === targetSCB) {
+      foundLayer = layer;
     }
   });
 
-  if (!found) {
-    alert("❌ SCB not found:\n" + target);
+  if (!foundLayer) {
+    alert("❌ SCB not found:\n" + targetSCB);
+    return;
   }
+
+  const targetLatLng = foundLayer.getLatLng();
+
+  foundLayer.openPopup();
+  map.setView(targetLatLng, 19);
+
+  drawRouteToTarget(targetLatLng);
 }
+
 
 
 
