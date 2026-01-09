@@ -7,6 +7,9 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 
 // ================= UTILITY =================
+function pad2(num) {
+  return num.toString().padStart(2, "0");
+}
 function loadGeoJSON(path, options, label) {
   fetch(path)
     .then(r => {
@@ -294,6 +297,7 @@ function searchSCB() {
     alert("❌ SCB not found:\n" + target);
   }
 }
+
 
 
 
