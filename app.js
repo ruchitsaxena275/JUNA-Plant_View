@@ -145,6 +145,46 @@ for (let i = 1; i <= 20; i++) {
 
 // ================= GPS / REAL-TIME LOCATION (HIGH ACCURACY) =================
 
+let currentLocation = null;
+let routeLine = null;
+
+map.on("locationfound", e => {
+  currentLocation = e.latlng;
+
+  L.circleMarker(e.latlng, {
+    radius: 7,
+    color: "green",
+    fillOpacity: 0.8
+  })
+  .bindPopup("📍 You are here")
+  .addTo(map);
+});
+
+// ================= ROUTE DRAWING FUNCTION =================
+function drawRouteToTarget(targetLatLng) {
+  if (!currentLocation) {
+    alert("GPS location not available");
+    return;
+  }
+
+  // Remove old route if exists
+  if (routeLine) {
+    map.removeLayer(routeLine);
+  }
+
+  // Draw direction line
+  routeLine = L.polyline(
+    [currentLocation, targetLatLng],
+    {
+      color: "#ff0000",
+      weight: 5,
+      dashArray: "8,6"
+    }
+  ).addTo(map);
+
+  map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+}
+
 // Single marker for live location
 let liveLocationMarker = L.circleMarker([0, 0], {
   radius: 7,
@@ -261,6 +301,7 @@ function searchString() {
       layer.openPopup();
       found = true;
     }
+    drawRouteToTarget(latlng);
   });
 
   if (!found) {
@@ -297,6 +338,7 @@ function searchSCB() {
     alert("❌ SCB not found:\n" + target);
   }
 }
+
 
 
 
