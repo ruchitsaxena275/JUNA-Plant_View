@@ -228,13 +228,14 @@ function searchString() {
   const scb = document.getElementById("scbSelect").value;
   const str = document.getElementById("stringSelect").value;
 
-  // 🔧 FIXED FORMAT (matches your GeoJSON exactly)
   const target = `ITC${itc}-INV${inv}-SCB${scb}-${str}`;
-
   let found = false;
 
   trackerLayer.eachLayer(layer => {
-    const p = layer.feature.properties;
+    const f = layer.feature;
+    if (!f || !f.properties) return;
+
+    const p = f.properties;
 
     if (
       p.string_1 === target ||
@@ -242,7 +243,18 @@ function searchString() {
       p.string_3 === target ||
       p.string_4 === target
     ) {
-      map.setView(layer.getLatLng(), 19);
+      let center;
+
+      // ✅ SAFE geometry handling
+      if (layer.getLatLng) {
+        center = layer.getLatLng(); // Point
+      } else if (layer.getBounds) {
+        center = layer.getBounds().getCenter(); // Polygon / Buffer
+      } else {
+        return;
+      }
+
+      map.setView(center, 19);
       layer.openPopup();
       found = true;
     }
@@ -252,6 +264,7 @@ function searchString() {
     alert("❌ String not found:\n" + target);
   }
 }
+
 
 // ================= SCB SEARCH =================
 function searchSCB() {
@@ -263,8 +276,15 @@ function searchSCB() {
   let found = false;
 
   scbLayer.eachLayer(layer => {
-    if (layer.feature.properties.Name === target) {
-      map.setView(layer.getLatLng(), 19);
+    const f = layer.feature;
+    if (!f || !f.properties) return;
+
+    if (f.properties.Name === target) {
+      const center = layer.getLatLng
+        ? layer.getLatLng()
+        : layer.getBounds().getCenter();
+
+      map.setView(center, 19);
       layer.openPopup();
       found = true;
     }
@@ -274,6 +294,7 @@ function searchSCB() {
     alert("❌ SCB not found:\n" + target);
   }
 }
+
 
 
 
