@@ -1,7 +1,7 @@
 // ================= MAP =================
 const map = L.map("map").setView([28.15, 73.13], 12);
 
-// Base map (online)
+// Base map
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19
 }).addTo(map);
@@ -10,6 +10,7 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 function pad2(num) {
   return num.toString().padStart(2, "0");
 }
+
 function loadGeoJSON(path, options, label) {
   fetch(path)
     .then(r => {
@@ -51,44 +52,30 @@ fetch("data/SCB.geojson")
         l.bindPopup(`<b>SCB:</b> ${f.properties.Name || "NA"}`)
     }).addTo(map);
 
-    // SCB search
-    new L.Control.Search({
-      layer: scbLayer,
-      propertyName: "Name",
-      marker: false,
-      moveToLocation: (latlng) => map.setView(latlng, 18)
-    }).addTo(map);
+    console.log("SCB layer loaded");
   });
 
-// ================= POWER STATION / ITC NUMBERS =================
+// ================= ITC NUMBERS =================
 fetch("data/Power_station_numbers.geojson")
-  .then(r => {
-    if (!r.ok) throw new Error("Power_station_numbers.geojson not found");
-    return r.json();
-  })
+  .then(r => r.json())
   .then(data => {
-    const itcNumberLayer = L.geoJSON(data, {
+    L.geoJSON(data, {
       pointToLayer: (f, latlng) =>
         L.circleMarker(latlng, {
           radius: 6,
           color: "#000",
-          weight: 1,
           fillColor: "#FFD700",
           fillOpacity: 1
         }),
       onEachFeature: (f, l) => {
-        // THIS IS THE IMPORTANT LINE
         l.bindTooltip(f.properties.Name, {
           permanent: true,
           direction: "center",
-          className: "itc-label"
+          className: "pb-label"
         });
       }
     }).addTo(map);
-
-    console.log("ITC number layer loaded:", data.features.length);
-  })
-  .catch(err => console.error("ITC number layer error:", err));
+  });
 
 // ================= TRACKERS =================
 let trackerLayer;
@@ -116,246 +103,140 @@ fetch("data/tracker_points.geojson")
       }
     }).addTo(map);
 
-    // String search
-    new L.Control.Search({
-      layer: trackerLayer,
-      propertyName: "string_1",
-      marker: false,
-      moveToLocation: (latlng) => map.setView(latlng, 18)
-    }).addTo(map);
+    console.log("Tracker points loaded");
   });
 
 // ================= ITC STRINGS =================
 const itcColors = [
-  "#ff7f0e", "#2ca02c", "#9467bd", "#1f77b4",
-  "#d62728", "#8c564b", "#e377c2", "#7f7f7f",
-  "#bcbd22", "#17becf"
+  "#ff7f0e","#2ca02c","#9467bd","#1f77b4",
+  "#d62728","#8c564b","#e377c2","#7f7f7f",
+  "#bcbd22","#17becf"
 ];
 
 for (let i = 1; i <= 20; i++) {
-  const color = itcColors[i % itcColors.length];
-
   loadGeoJSON(`data/ITC-${i}_strings.geojson`, {
     style: {
-      color: color,
+      color: itcColors[i % itcColors.length],
       weight: 1
     }
   }, `ITC-${i} Strings`);
 }
 
-// ================= GPS / REAL-TIME LOCATION (HIGH ACCURACY) =================
+// =================================================
+// ================= FIX 3 (ROUTING CORE) ===========
+// =================================================
 
 let currentLocation = null;
 let routeLine = null;
 
-map.on("locationfound", e => {
-  currentLocation = e.latlng;
-
-  L.circleMarker(e.latlng, {
-    radius: 7,
-    color: "green",
-    fillOpacity: 0.8
-  })
-  .bindPopup("📍 You are here")
-  .addTo(map);
-});
-
-// ================= ROUTE DRAWING FUNCTION =================
-function drawRouteToTarget(targetLatLng) {
-  if (!currentLocation) {
-    alert("GPS location not available");
-    return;
-  }
-
-  // Remove old route if exists
-  if (routeLine) {
-    map.removeLayer(routeLine);
-  }
-
-  // Draw direction line
-  routeLine = L.polyline(
-    [currentLocation, targetLatLng],
-    {
-      color: "#ff0000",
-      weight: 5,
-      dashArray: "8,6"
-    }
-  ).addTo(map);
-
-  map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
-}
-
-// Single marker for live location
-let liveLocationMarker = L.circleMarker([0, 0], {
+// Live GPS marker
+const liveMarker = L.circleMarker([0, 0], {
   radius: 7,
   color: "green",
-  fillColor: "green",
   fillOpacity: 0.9
 }).addTo(map);
 
-// Success callback
-function onLocationSuccess(position) {
-  const lat = position.coords.latitude;
-  const lng = position.coords.longitude;
-  const accuracy = position.coords.accuracy;
-
-  console.log("GPS:", lat, lng, "Accuracy:", accuracy, "m");
-
-  const latlng = [lat, lng];
-
-  liveLocationMarker
-    .setLatLng(latlng)
-    .bindPopup(`📍 You are here<br>Accuracy: ${accuracy.toFixed(1)} m`);
-
-  // Auto-center only when accuracy is acceptable
-  if (accuracy < 15) {
-    map.setView(latlng, 18);
-  }
-}
-
-// Error callback
-function onLocationError(err) {
-  console.warn("GPS error:", err.message);
-}
-
-// Start high-accuracy GPS tracking
+// GPS watcher
 if ("geolocation" in navigator) {
   navigator.geolocation.watchPosition(
-    onLocationSuccess,
-    onLocationError,
+    pos => {
+      currentLocation = L.latLng(
+        pos.coords.latitude,
+        pos.coords.longitude
+      );
+
+      liveMarker
+        .setLatLng(currentLocation)
+        .bindPopup(`📍 You are here<br>Accuracy: ${pos.coords.accuracy.toFixed(1)} m`);
+    },
+    err => console.warn("GPS error:", err.message),
     {
       enableHighAccuracy: true,
       maximumAge: 0,
       timeout: 10000
     }
   );
-} else {
-  console.warn("Geolocation not supported by browser");
 }
 
-// ================= SEARCH UI LOGIC (FIXED) =================
-document.addEventListener("DOMContentLoaded", () => {
-
-  // Utility to fill dropdowns
-  function fillSelect(id, prefix, start, end) {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-
-    sel.innerHTML = ""; // safety clear
-
-    for (let i = start; i <= end; i++) {
-      const opt = document.createElement("option");
-      opt.value = i;
-      opt.textContent = prefix + i;
-      sel.appendChild(opt);
-    }
+// ROUTE FUNCTION (FIX-3)
+function drawRouteToTarget(targetLatLng) {
+  if (!currentLocation) {
+    alert("📡 Waiting for GPS location...");
+    return;
   }
 
-  /* ---------- STRING SEARCH DROPDOWNS ---------- */
-  fillSelect("itcSelect", "ITC-", 1, 20);
-  fillSelect("invSelect", "INV-", 1, 4);
-  fillSelect("scbSelect", "SCB-", 1, 18);
-  fillSelect("stringSelect", "S", 1, 19);
+  if (routeLine) {
+    map.removeLayer(routeLine);
+  }
 
-  /* ---------- SCB SEARCH DROPDOWNS ---------- */
-  fillSelect("itcSelectScb", "ITC-", 1, 20);
-  fillSelect("invSelectScb", "INV-", 1, 4);
-  fillSelect("scbSelectOnly", "SCB-", 1, 18);
-});
+  routeLine = L.polyline(
+    [currentLocation, targetLatLng],
+    {
+      color: "red",
+      weight: 5,
+      dashArray: "8,6"
+    }
+  ).addTo(map);
 
+  map.fitBounds(routeLine.getBounds(), { padding: [60, 60] });
+}
 
 // ================= STRING SEARCH =================
 function searchString() {
   const itc = document.getElementById("string-itc").value;
   const inv = document.getElementById("string-inv").value;
   const scb = document.getElementById("string-scb").value;
-  const s = document.getElementById("string-s").value;
+  const s   = document.getElementById("string-s").value;
 
-  const targetString = `${itc}-${inv}-${scb}-${s}`;
+  const target = `${itc}-${inv}-${scb}-${s}`;
+  let found = null;
 
-  let foundLayer = null;
-
-  trackerLayer.eachLayer(layer => {
-    const p = layer.feature?.properties;
+  trackerLayer.eachLayer(l => {
+    const p = l.feature?.properties;
     if (!p) return;
 
-    const strings = [
-      p.string_1,
-      p.string_2,
-      p.string_3,
-      p.string_4
-    ];
-
-    if (strings.includes(targetString)) {
-      foundLayer = layer;
+    if ([p.string_1,p.string_2,p.string_3,p.string_4].includes(target)) {
+      found = l;
     }
   });
 
-  if (!foundLayer) {
-    alert("❌ String not found:\n" + targetString);
+  if (!found) {
+    alert("❌ String not found:\n" + target);
     return;
   }
 
-  // ✅ SAFE LatLng extraction
-  let targetLatLng = null;
-
-  if (foundLayer.getLatLng) {
-    targetLatLng = foundLayer.getLatLng();
-  } else if (foundLayer.getBounds) {
-    targetLatLng = foundLayer.getBounds().getCenter();
-  }
-
-  if (!targetLatLng) {
-    alert("❌ Location not found for routing");
-    return;
-  }
-
-  foundLayer.openPopup();
+  const targetLatLng = found.getLatLng();
+  found.openPopup();
   map.setView(targetLatLng, 19);
 
   drawRouteToTarget(targetLatLng);
 }
-
-
 
 // ================= SCB SEARCH =================
 function searchSCB() {
-  const itc = document.getElementById("scb-itc").value.replace("ITC-", "");
-  const inv = document.getElementById("scb-inv").value.replace("INV-", "");
-  let scb = document.getElementById("scb-scb").value.replace("SCB-", "");
+  const itc = document.getElementById("scb-itc").value.replace("ITC-","");
+  const inv = document.getElementById("scb-inv").value.replace("INV-","");
+  let scb   = document.getElementById("scb-scb").value.replace("SCB-","");
 
-  // Pad SCB number (1 → 01)
-  scb = scb.padStart(2, "0");
+  scb = pad2(scb);
+  const target = `SCB ${itc}.${inv}.${scb}`;
 
-  const targetSCB = `SCB ${itc}.${inv}.${scb}`;
+  let found = null;
 
-  let foundLayer = null;
-
-  scbLayer.eachLayer(layer => {
-    const name = layer.feature?.properties?.Name;
-    if (name === targetSCB) {
-      foundLayer = layer;
+  scbLayer.eachLayer(l => {
+    if (l.feature?.properties?.Name === target) {
+      found = l;
     }
   });
 
-  if (!foundLayer) {
-    alert("❌ SCB not found:\n" + targetSCB);
+  if (!found) {
+    alert("❌ SCB not found:\n" + target);
     return;
   }
 
-  const targetLatLng = foundLayer.getLatLng();
-
-  foundLayer.openPopup();
+  const targetLatLng = found.getLatLng();
+  found.openPopup();
   map.setView(targetLatLng, 19);
 
   drawRouteToTarget(targetLatLng);
 }
-
-
-
-
-
-
-
-
-
