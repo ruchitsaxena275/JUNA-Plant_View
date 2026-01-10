@@ -167,11 +167,9 @@ function onLocationSuccess(position) {
     .setLatLng(latlng)
     .bindPopup(`📍 You are here<br>Accuracy: ${accuracy.toFixed(1)} m`);
 
-  // Auto-center only when accuracy is acceptable
-  if (accuracy < 15) {
-    map.setView(latlng, 18);
-  }
+  // ❌ NO auto zoom / NO auto centering
 }
+
 
 // Error callback
 function onLocationError(err) {
@@ -297,6 +295,7 @@ function searchSCB() {
     alert("❌ SCB not found:\n" + target);
   }
 }
+
 
 
 
