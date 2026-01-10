@@ -1,7 +1,7 @@
 // ================= MAP =================
 const map = L.map("map").setView([28.15, 73.13], 12);
 
-// Base map (online)
+// Base map
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19
 }).addTo(map);
@@ -10,16 +10,13 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 function pad2(num) {
   return num.toString().padStart(2, "0");
 }
+
 function loadGeoJSON(path, options, label) {
   fetch(path)
-    .then(r => {
-      if (!r.ok) throw new Error(path + " not found");
-      return r.json();
-    })
+    .then(r => r.json())
     .then(data => {
-      const layer = L.geoJSON(data, options).addTo(map);
+      L.geoJSON(data, options).addTo(map);
       console.log(label + " loaded");
-      return layer;
     })
     .catch(err => console.error(label + " error:", err));
 }
@@ -41,43 +38,30 @@ fetch("data/SCB.geojson")
   .then(r => r.json())
   .then(data => {
     scbLayer = L.geoJSON(data, {
-      pointToLayer: (f, latlng) =>
+      pointToLayer: (_, latlng) =>
         L.circleMarker(latlng, {
           radius: 6,
           color: "red",
           fillOpacity: 0.9
         }),
       onEachFeature: (f, l) =>
-        l.bindPopup(`<b>SCB:</b> ${f.properties.Name || "NA"}`)
-    }).addTo(map);
-
-    // SCB search
-    new L.Control.Search({
-      layer: scbLayer,
-      propertyName: "Name",
-      marker: false,
-      moveToLocation: (latlng) => map.setView(latlng, 18)
+        l.bindPopup(`<b>SCB:</b> ${f.properties.Name}`)
     }).addTo(map);
   });
 
-// ================= POWER STATION / ITC NUMBERS =================
+// ================= ITC NUMBERS =================
 fetch("data/Power_station_numbers.geojson")
-  .then(r => {
-    if (!r.ok) throw new Error("Power_station_numbers.geojson not found");
-    return r.json();
-  })
+  .then(r => r.json())
   .then(data => {
-    const itcNumberLayer = L.geoJSON(data, {
-      pointToLayer: (f, latlng) =>
+    L.geoJSON(data, {
+      pointToLayer: (_, latlng) =>
         L.circleMarker(latlng, {
           radius: 6,
           color: "#000",
-          weight: 1,
           fillColor: "#FFD700",
           fillOpacity: 1
         }),
       onEachFeature: (f, l) => {
-        // THIS IS THE IMPORTANT LINE
         l.bindTooltip(f.properties.Name, {
           permanent: true,
           direction: "center",
@@ -85,10 +69,7 @@ fetch("data/Power_station_numbers.geojson")
         });
       }
     }).addTo(map);
-
-    console.log("ITC number layer loaded:", data.features.length);
-  })
-  .catch(err => console.error("ITC number layer error:", err));
+  });
 
 // ================= TRACKERS =================
 let trackerLayer;
@@ -97,7 +78,7 @@ fetch("data/tracker_points.geojson")
   .then(r => r.json())
   .then(data => {
     trackerLayer = L.geoJSON(data, {
-      pointToLayer: (f, latlng) =>
+      pointToLayer: (_, latlng) =>
         L.circleMarker(latlng, {
           radius: 4,
           color: "blue",
@@ -108,248 +89,88 @@ fetch("data/tracker_points.geojson")
           <b>Tracker ID:</b> ${f.properties.tracker_id}<br>
           <b>ITC:</b> ${f.properties.Layer}<br>
           <b>Robo IDs:</b> ${f.properties.robo_ids}<br>
-          <b>String 1:</b> ${f.properties.string_1 || ""}<br>
-          <b>String 2:</b> ${f.properties.string_2 || ""}<br>
-          <b>String 3:</b> ${f.properties.string_3 || ""}<br>
-          <b>String 4:</b> ${f.properties.string_4 || ""}
+          <b>String 1:</b> ${f.properties.string_1}<br>
+          <b>String 2:</b> ${f.properties.string_2}<br>
+          <b>String 3:</b> ${f.properties.string_3}<br>
+          <b>String 4:</b> ${f.properties.string_4}
         `);
       }
-    }).addTo(map);
-
-    // String search
-    new L.Control.Search({
-      layer: trackerLayer,
-      propertyName: "string_1",
-      marker: false,
-      moveToLocation: (latlng) => map.setView(latlng, 18)
     }).addTo(map);
   });
 
 // ================= ITC STRINGS =================
-const itcColors = [
-  "#ff7f0e", "#2ca02c", "#9467bd", "#1f77b4",
-  "#d62728", "#8c564b", "#e377c2", "#7f7f7f",
-  "#bcbd22", "#17becf"
-];
-
 for (let i = 1; i <= 20; i++) {
-  const color = itcColors[i % itcColors.length];
-
   loadGeoJSON(`data/ITC-${i}_strings.geojson`, {
-    style: {
-      color: color,
-      weight: 1
-    }
+    style: { weight: 1 }
   }, `ITC-${i} Strings`);
 }
 
-// ================= GPS / REAL-TIME LOCATION (HIGH ACCURACY) =================
-
-// Single marker for live location
-let liveLocationMarker = L.circleMarker([0, 0], {
-  radius: 7,
-  color: "green",
-  fillColor: "green",
-  fillOpacity: 0.9
-}).addTo(map);
-
-// Success callback
-function onLocationSuccess(position) {
-  const lat = position.coords.latitude;
-  const lng = position.coords.longitude;
-  const accuracy = position.coords.accuracy;
-
-  console.log("GPS:", lat, lng, "Accuracy:", accuracy, "m");
-
-  const latlng = [lat, lng];
-
-  liveLocationMarker
-    .setLatLng(latlng)
-    .bindPopup(`📍 You are here<br>Accuracy: ${accuracy.toFixed(1)} m`);
-
-  // Auto-center only when accuracy is acceptable
-  if (accuracy < 15) {
-    map.setView(latlng, 18);
-  }
-}
-
-// Error callback
-function onLocationError(err) {
-  console.warn("GPS error:", err.message);
-}
-
-// Start high-accuracy GPS tracking
-if ("geolocation" in navigator) {
-  navigator.geolocation.watchPosition(
-    onLocationSuccess,
-    onLocationError,
-    {
-      enableHighAccuracy: true,
-      maximumAge: 0,
-      timeout: 10000
-    }
-  );
-} else {
-  console.warn("Geolocation not supported by browser");
-}
-
-// ================= SEARCH UI LOGIC (FIXED) =================
-document.addEventListener("DOMContentLoaded", () => {
-
-  // Utility to fill dropdowns
-  function fillSelect(id, prefix, start, end) {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-
-    sel.innerHTML = ""; // safety clear
-
-    for (let i = start; i <= end; i++) {
-      const opt = document.createElement("option");
-      opt.value = i;
-      opt.textContent = prefix + i;
-      sel.appendChild(opt);
-    }
-  }
-
-  /* ---------- STRING SEARCH DROPDOWNS ---------- */
-  fillSelect("itcSelect", "ITC-", 1, 20);
-  fillSelect("invSelect", "INV-", 1, 4);
-  fillSelect("scbSelect", "SCB-", 1, 18);
-  fillSelect("stringSelect", "S", 1, 19);
-
-  /* ---------- SCB SEARCH DROPDOWNS ---------- */
-  fillSelect("itcSelectScb", "ITC-", 1, 20);
-  fillSelect("invSelectScb", "INV-", 1, 4);
-  fillSelect("scbSelectOnly", "SCB-", 1, 18);
-});
-
-
 // ================= STRING SEARCH =================
 function searchString() {
-  const itc = document.getElementById("itcSelect").value;
-  const inv = document.getElementById("invSelect").value;
-  const scb = document.getElementById("scbSelect").value;
-  const str = document.getElementById("stringSelect").value;
+  const itc = itcSelect.value;
+  const inv = invSelect.value;
+  const scb = scbSelect.value;
+  const s = stringSelect.value;
 
-  const target = `ITC${itc}-INV${inv}-SCB${scb}-S${str}`;
+  const target = `ITC${itc}-INV${inv}-SCB${scb}-S${s}`;
   let found = false;
 
-  trackerLayer.eachLayer(layer => {
-    const f = layer.feature;
-    if (!f || !f.properties) return;
-
-    const p = f.properties;
-
-    if (
-      p.string_1 === target ||
-      p.string_2 === target ||
-      p.string_3 === target ||
-      p.string_4 === target
-    ) {
-      let center;
-
-      // ✅ SAFE geometry handling
-      if (layer.getLatLng) {
-        center = layer.getLatLng(); // Point
-      } else if (layer.getBounds) {
-        center = layer.getBounds().getCenter(); // Polygon / Buffer
-      } else {
-        return;
-      }
-
-      map.setView(center, 19);
-      layer.openPopup();
+  trackerLayer.eachLayer(l => {
+    const p = l.feature.properties;
+    if ([p.string_1, p.string_2, p.string_3, p.string_4].includes(target)) {
+      map.setView(l.getLatLng(), 19);
+      l.openPopup();
       found = true;
     }
   });
 
-  if (!found) {
-    alert("❌ String not found:\n" + target);
-  }
+  if (!found) alert("❌ String not found:\n" + target);
 }
-
 
 // ================= SCB SEARCH =================
 function searchSCB() {
-  const itc = document.getElementById("itcSelectScb").value;
-  const inv = document.getElementById("invSelectScb").value;
-  const scb = document.getElementById("scbSelectOnly").value;
+  const itc = itcSelectScb.value;
+  const inv = invSelectScb.value;
+  const scb = pad2(scbSelectOnly.value);
 
-  const target = `SCB ${itc}.${inv}.${pad2(scb)}`;
+  const target = `SCB ${itc}.${inv}.${scb}`;
   let found = false;
 
-  scbLayer.eachLayer(layer => {
-    const f = layer.feature;
-    if (!f || !f.properties) return;
-
-    if (f.properties.Name === target) {
-      const center = layer.getLatLng
-        ? layer.getLatLng()
-        : layer.getBounds().getCenter();
-
-      map.setView(center, 19);
-      layer.openPopup();
+  scbLayer.eachLayer(l => {
+    if (l.feature.properties.Name === target) {
+      map.setView(l.getLatLng(), 19);
+      l.openPopup();
       found = true;
     }
   });
 
-  if (!found) {
-    alert("❌ SCB not found:\n" + target);
-  }
+  if (!found) alert("❌ SCB not found:\n" + target);
 }
-// ================= LOCATE ME BUTTON =================
 
+// ================= LOCATE ME (ONLY ON CLICK) =================
 let locateMarker = null;
 
 document.getElementById("locateBtn").addEventListener("click", () => {
 
-  if (!("geolocation" in navigator)) {
-    alert("Geolocation not supported");
-    return;
-  }
-
   navigator.geolocation.getCurrentPosition(
     pos => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      const accuracy = pos.coords.accuracy;
+      const latlng = [pos.coords.latitude, pos.coords.longitude];
 
-      const latlng = [lat, lng];
+      if (locateMarker) map.removeLayer(locateMarker);
 
-      // Remove old marker
-      if (locateMarker) {
-        map.removeLayer(locateMarker);
-      }
-
-      // Add new marker
       locateMarker = L.circleMarker(latlng, {
         radius: 8,
         color: "green",
         fillColor: "green",
         fillOpacity: 0.9
       })
-      .addTo(map)
-      .bindPopup(`📍 You are here<br>Accuracy: ${accuracy.toFixed(1)} m`)
-      .openPopup();
+        .addTo(map)
+        .bindPopup("📍 You are here")
+        .openPopup();
 
-      // 👇 Controlled zoom (not too much)
       map.setView(latlng, 17);
     },
-    err => {
-      alert("Unable to get location");
-      console.error(err);
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
-    }
+    () => alert("Location not available"),
+    { enableHighAccuracy: true }
   );
 });
-
-
-
-
-
-
-
