@@ -1,7 +1,7 @@
 // ================= MAP =================
 const map = L.map("map").setView([28.15, 73.13], 12);
 
-// Base map
+// Base map (online)
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19
 }).addTo(map);
@@ -10,7 +10,6 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 function pad2(num) {
   return num.toString().padStart(2, "0");
 }
-
 function loadGeoJSON(path, options, label) {
   fetch(path)
     .then(r => {
@@ -52,30 +51,44 @@ fetch("data/SCB.geojson")
         l.bindPopup(`<b>SCB:</b> ${f.properties.Name || "NA"}`)
     }).addTo(map);
 
-    console.log("SCB layer loaded");
+    // SCB search
+    new L.Control.Search({
+      layer: scbLayer,
+      propertyName: "Name",
+      marker: false,
+      moveToLocation: (latlng) => map.setView(latlng, 18)
+    }).addTo(map);
   });
 
-// ================= ITC NUMBERS =================
+// ================= POWER STATION / ITC NUMBERS =================
 fetch("data/Power_station_numbers.geojson")
-  .then(r => r.json())
+  .then(r => {
+    if (!r.ok) throw new Error("Power_station_numbers.geojson not found");
+    return r.json();
+  })
   .then(data => {
-    L.geoJSON(data, {
+    const itcNumberLayer = L.geoJSON(data, {
       pointToLayer: (f, latlng) =>
         L.circleMarker(latlng, {
           radius: 6,
           color: "#000",
+          weight: 1,
           fillColor: "#FFD700",
           fillOpacity: 1
         }),
       onEachFeature: (f, l) => {
+        // THIS IS THE IMPORTANT LINE
         l.bindTooltip(f.properties.Name, {
           permanent: true,
           direction: "center",
-          className: "pb-label"
+          className: "itc-label"
         });
       }
     }).addTo(map);
-  });
+
+    console.log("ITC number layer loaded:", data.features.length);
+  })
+  .catch(err => console.error("ITC number layer error:", err));
 
 // ================= TRACKERS =================
 let trackerLayer;
@@ -103,140 +116,191 @@ fetch("data/tracker_points.geojson")
       }
     }).addTo(map);
 
-    console.log("Tracker points loaded");
+    // String search
+    new L.Control.Search({
+      layer: trackerLayer,
+      propertyName: "string_1",
+      marker: false,
+      moveToLocation: (latlng) => map.setView(latlng, 18)
+    }).addTo(map);
   });
 
 // ================= ITC STRINGS =================
 const itcColors = [
-  "#ff7f0e","#2ca02c","#9467bd","#1f77b4",
-  "#d62728","#8c564b","#e377c2","#7f7f7f",
-  "#bcbd22","#17becf"
+  "#ff7f0e", "#2ca02c", "#9467bd", "#1f77b4",
+  "#d62728", "#8c564b", "#e377c2", "#7f7f7f",
+  "#bcbd22", "#17becf"
 ];
 
 for (let i = 1; i <= 20; i++) {
+  const color = itcColors[i % itcColors.length];
+
   loadGeoJSON(`data/ITC-${i}_strings.geojson`, {
     style: {
-      color: itcColors[i % itcColors.length],
+      color: color,
       weight: 1
     }
   }, `ITC-${i} Strings`);
 }
 
-// =================================================
-// ================= FIX 3 (ROUTING CORE) ===========
-// =================================================
+// ================= GPS / REAL-TIME LOCATION (HIGH ACCURACY) =================
 
-let currentLocation = null;
-let routeLine = null;
-
-// Live GPS marker
-const liveMarker = L.circleMarker([0, 0], {
+// Single marker for live location
+let liveLocationMarker = L.circleMarker([0, 0], {
   radius: 7,
   color: "green",
+  fillColor: "green",
   fillOpacity: 0.9
 }).addTo(map);
 
-// GPS watcher
+// Success callback
+function onLocationSuccess(position) {
+  const lat = position.coords.latitude;
+  const lng = position.coords.longitude;
+  const accuracy = position.coords.accuracy;
+
+  console.log("GPS:", lat, lng, "Accuracy:", accuracy, "m");
+
+  const latlng = [lat, lng];
+
+  liveLocationMarker
+    .setLatLng(latlng)
+    .bindPopup(`📍 You are here<br>Accuracy: ${accuracy.toFixed(1)} m`);
+
+  // Auto-center only when accuracy is acceptable
+  if (accuracy < 15) {
+    map.setView(latlng, 18);
+  }
+}
+
+// Error callback
+function onLocationError(err) {
+  console.warn("GPS error:", err.message);
+}
+
+// Start high-accuracy GPS tracking
 if ("geolocation" in navigator) {
   navigator.geolocation.watchPosition(
-    pos => {
-      currentLocation = L.latLng(
-        pos.coords.latitude,
-        pos.coords.longitude
-      );
-
-      liveMarker
-        .setLatLng(currentLocation)
-        .bindPopup(`📍 You are here<br>Accuracy: ${pos.coords.accuracy.toFixed(1)} m`);
-    },
-    err => console.warn("GPS error:", err.message),
+    onLocationSuccess,
+    onLocationError,
     {
       enableHighAccuracy: true,
       maximumAge: 0,
       timeout: 10000
     }
   );
+} else {
+  console.warn("Geolocation not supported by browser");
 }
 
-// ROUTE FUNCTION (FIX-3)
-function drawRouteToTarget(targetLatLng) {
-  if (!currentLocation) {
-    alert("📡 Waiting for GPS location...");
-    return;
-  }
+// ================= SEARCH UI LOGIC (FIXED) =================
+document.addEventListener("DOMContentLoaded", () => {
 
-  if (routeLine) {
-    map.removeLayer(routeLine);
-  }
+  // Utility to fill dropdowns
+  function fillSelect(id, prefix, start, end) {
+    const sel = document.getElementById(id);
+    if (!sel) return;
 
-  routeLine = L.polyline(
-    [currentLocation, targetLatLng],
-    {
-      color: "red",
-      weight: 5,
-      dashArray: "8,6"
+    sel.innerHTML = ""; // safety clear
+
+    for (let i = start; i <= end; i++) {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = prefix + i;
+      sel.appendChild(opt);
     }
-  ).addTo(map);
+  }
 
-  map.fitBounds(routeLine.getBounds(), { padding: [60, 60] });
-}
+  /* ---------- STRING SEARCH DROPDOWNS ---------- */
+  fillSelect("itcSelect", "ITC-", 1, 20);
+  fillSelect("invSelect", "INV-", 1, 4);
+  fillSelect("scbSelect", "SCB-", 1, 18);
+  fillSelect("stringSelect", "S", 1, 19);
+
+  /* ---------- SCB SEARCH DROPDOWNS ---------- */
+  fillSelect("itcSelectScb", "ITC-", 1, 20);
+  fillSelect("invSelectScb", "INV-", 1, 4);
+  fillSelect("scbSelectOnly", "SCB-", 1, 18);
+});
+
 
 // ================= STRING SEARCH =================
 function searchString() {
-  const itc = document.getElementById("string-itc").value;
-  const inv = document.getElementById("string-inv").value;
-  const scb = document.getElementById("string-scb").value;
-  const s   = document.getElementById("string-s").value;
+  const itc = document.getElementById("itcSelect").value;
+  const inv = document.getElementById("invSelect").value;
+  const scb = document.getElementById("scbSelect").value;
+  const str = document.getElementById("stringSelect").value;
 
-  const target = `${itc}-${inv}-${scb}-${s}`;
-  let found = null;
+  const target = `ITC${itc}-INV${inv}-SCB${scb}-S${str}`;
+  let found = false;
 
-  trackerLayer.eachLayer(l => {
-    const p = l.feature?.properties;
-    if (!p) return;
+  trackerLayer.eachLayer(layer => {
+    const f = layer.feature;
+    if (!f || !f.properties) return;
 
-    if ([p.string_1,p.string_2,p.string_3,p.string_4].includes(target)) {
-      found = l;
+    const p = f.properties;
+
+    if (
+      p.string_1 === target ||
+      p.string_2 === target ||
+      p.string_3 === target ||
+      p.string_4 === target
+    ) {
+      let center;
+
+      // ✅ SAFE geometry handling
+      if (layer.getLatLng) {
+        center = layer.getLatLng(); // Point
+      } else if (layer.getBounds) {
+        center = layer.getBounds().getCenter(); // Polygon / Buffer
+      } else {
+        return;
+      }
+
+      map.setView(center, 19);
+      layer.openPopup();
+      found = true;
     }
   });
 
   if (!found) {
     alert("❌ String not found:\n" + target);
-    return;
   }
-
-  const targetLatLng = found.getLatLng();
-  found.openPopup();
-  map.setView(targetLatLng, 19);
-
-  drawRouteToTarget(targetLatLng);
 }
+
 
 // ================= SCB SEARCH =================
 function searchSCB() {
-  const itc = document.getElementById("scb-itc").value.replace("ITC-","");
-  const inv = document.getElementById("scb-inv").value.replace("INV-","");
-  let scb   = document.getElementById("scb-scb").value.replace("SCB-","");
+  const itc = document.getElementById("itcSelectScb").value;
+  const inv = document.getElementById("invSelectScb").value;
+  const scb = document.getElementById("scbSelectOnly").value;
 
-  scb = pad2(scb);
-  const target = `SCB ${itc}.${inv}.${scb}`;
+  const target = `SCB ${itc}.${inv}.${pad2(scb)}`;
+  let found = false;
 
-  let found = null;
+  scbLayer.eachLayer(layer => {
+    const f = layer.feature;
+    if (!f || !f.properties) return;
 
-  scbLayer.eachLayer(l => {
-    if (l.feature?.properties?.Name === target) {
-      found = l;
+    if (f.properties.Name === target) {
+      const center = layer.getLatLng
+        ? layer.getLatLng()
+        : layer.getBounds().getCenter();
+
+      map.setView(center, 19);
+      layer.openPopup();
+      found = true;
     }
   });
 
   if (!found) {
     alert("❌ SCB not found:\n" + target);
-    return;
   }
-
-  const targetLatLng = found.getLatLng();
-  found.openPopup();
-  map.setView(targetLatLng, 19);
-
-  drawRouteToTarget(targetLatLng);
 }
+
+
+
+
+
+
+
