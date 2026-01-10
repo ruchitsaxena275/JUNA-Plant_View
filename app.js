@@ -297,6 +297,56 @@ function searchSCB() {
     alert("❌ SCB not found:\n" + target);
   }
 }
+// ================= LOCATE ME BUTTON =================
+
+let locateMarker = null;
+
+document.getElementById("locateBtn").addEventListener("click", () => {
+
+  if (!("geolocation" in navigator)) {
+    alert("Geolocation not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      const accuracy = pos.coords.accuracy;
+
+      const latlng = [lat, lng];
+
+      // Remove old marker
+      if (locateMarker) {
+        map.removeLayer(locateMarker);
+      }
+
+      // Add new marker
+      locateMarker = L.circleMarker(latlng, {
+        radius: 8,
+        color: "green",
+        fillColor: "green",
+        fillOpacity: 0.9
+      })
+      .addTo(map)
+      .bindPopup(`📍 You are here<br>Accuracy: ${accuracy.toFixed(1)} m`)
+      .openPopup();
+
+      // 👇 Controlled zoom (not too much)
+      map.setView(latlng, 17);
+    },
+    err => {
+      alert("Unable to get location");
+      console.error(err);
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+  );
+});
+
 
 
 
