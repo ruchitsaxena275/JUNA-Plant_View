@@ -16,14 +16,13 @@
     href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css"
   />
 
-  <link rel="stylesheet" href="style.css" />
-  <!-- Firebase Auth Guard -->
+  <!-- 🔐 Firebase Auth Protection -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
   const firebaseConfig = {
-    apiKey: "AIzaSyBvx1kW617AY4bjKDfGnWF8IlrGYZzS0os",
+    apiKey: "AIzaSyBvx1kW617AY4bjKDfGnWF81IrGYZzSoos",
     authDomain: "junasolarmap.firebaseapp.com",
     projectId: "junasolarmap",
     appId: "1:218285140022:web:a237004e191b3539d91097"
@@ -34,20 +33,24 @@
 
   // ✅ ALLOWED EMAIL LIST
   const ALLOWED_EMAILS = [
-    "rusunsaxena2000@gmail.com",
-    "engineer1@company.com"
+    "rusunsaxena2000@gmail.com"
   ];
 
   auth.onAuthStateChanged(user => {
     if (!user) {
-      window.location.href = "login.html";
+      // wait briefly for session restore
+      setTimeout(() => {
+        if (!auth.currentUser) {
+          window.location.replace("login.html");
+        }
+      }, 800);
       return;
     }
 
     if (!ALLOWED_EMAILS.includes(user.email)) {
       alert("Access denied");
       auth.signOut();
-      window.location.href = "login.html";
+      window.location.replace("login.html");
     }
   });
 </script>
@@ -95,6 +98,7 @@
   <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
