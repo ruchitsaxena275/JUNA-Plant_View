@@ -1,29 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>JUNA Login</title>
+  <meta charset="UTF-8">
+  <title>JUNA Solar Plant Login</title>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      text-align: center;
+      margin-top: 100px;
+    }
+    input {
+      padding: 10px;
+      width: 260px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
-<body style="font-family: Arial; text-align: center; margin-top: 80px;">
+
+<body>
 
   <h2>🔐 JUNA Solar Plant Access</h2>
 
-  <input
-    type="email"
-    id="email"
-    placeholder="Enter your email"
-    style="padding:10px; width:260px;"
-  />
+  <input type="email" id="email" placeholder="Enter your email" />
   <br><br>
-  <button onclick="sendLink()" style="padding:10px 20px;">
-    Send Login Link
-  </button>
+  <button onclick="sendLink()">Send Login Link</button>
 
 <script>
+  // 🔑 FIREBASE CONFIG (YOUR REAL VALUES)
   const firebaseConfig = {
-    apiKey: "AIzaSyBvx1kW617AY4bjKDfGnWF8IlrGYZzS0os",
+    apiKey: "AIzaSyBvx1kW617AY4bjKDfGnWF81IrGYZzSoos",
     authDomain: "junasolarmap.firebaseapp.com",
     projectId: "junasolarmap",
     appId: "1:218285140022:web:a237004e191b3539d91097"
@@ -32,29 +46,34 @@
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
+  // ✅ VERY IMPORTANT: persist session
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
   function sendLink() {
     const email = document.getElementById("email").value;
 
     const actionCodeSettings = {
-      url: window.location.origin + "/JUNA-Plant_View/",
+      url: "https://ruchitsaxena275.github.io/JUNA-Plant_View/index.html",
       handleCodeInApp: true
     };
 
     auth.sendSignInLinkToEmail(email, actionCodeSettings)
       .then(() => {
         localStorage.setItem("emailForSignIn", email);
-        alert("Login link sent to your email");
+        alert("Login link sent to your email.");
       })
       .catch(err => alert(err.message));
   }
 
+  // ✅ HANDLE MAGIC LINK LOGIN
   if (auth.isSignInWithEmailLink(window.location.href)) {
     let email = localStorage.getItem("emailForSignIn");
     if (!email) email = prompt("Confirm your email");
 
     auth.signInWithEmailLink(email, window.location.href)
       .then(() => {
-        window.location.href = "index.html";
+        localStorage.removeItem("emailForSignIn");
+        window.location.replace("index.html");
       })
       .catch(err => alert(err.message));
   }
