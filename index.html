@@ -16,8 +16,7 @@
     href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css"
   />
 
-  <!-- 🔐 Firebase Auth Protection -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
@@ -31,19 +30,18 @@
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
-  // ✅ ALLOWED EMAIL LIST
   const ALLOWED_EMAILS = [
     "rusunsaxena2000@gmail.com"
   ];
 
+  let checked = false;
+
   auth.onAuthStateChanged(user => {
+    if (checked) return;
+    checked = true;
+
     if (!user) {
-      // wait briefly for session restore
-      setTimeout(() => {
-        if (!auth.currentUser) {
-          window.location.replace("login.html");
-        }
-      }, 800);
+      window.location.replace("login.html");
       return;
     }
 
@@ -98,6 +96,7 @@
   <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
