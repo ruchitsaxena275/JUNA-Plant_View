@@ -1,6 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+  (function () {
+    const PASSWORD = "juna@123";   // 🔐 CHANGE THIS PASSWORD
+
+    // check if already unlocked in this browser session
+    if (sessionStorage.getItem("juna_access") === "granted") {
+      return; // already authenticated
+    }
+
+    const entered = prompt("🔐 Enter password to access JUNA Plant View:");
+
+    if (entered !== PASSWORD) {
+      alert("❌ Access denied");
+      // stop page from loading
+      document.documentElement.innerHTML = "";
+      throw new Error("Unauthorized access");
+    }
+
+    // mark access granted for this session
+    sessionStorage.setItem("juna_access", "granted");
+  })();
+</script>
   <meta charset="UTF-8" />
   <title> JUNA SOLAR FARM MAP</title>
 
@@ -60,6 +82,7 @@
   <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
