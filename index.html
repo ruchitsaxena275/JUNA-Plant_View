@@ -15,7 +15,6 @@
     rel="stylesheet"
     href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css"
   />
-
  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
@@ -34,14 +33,14 @@
     "rusunsaxena2000@gmail.com"
   ];
 
-  let checked = false;
-
   auth.onAuthStateChanged(user => {
-    if (checked) return;
-    checked = true;
-
     if (!user) {
-      window.location.replace("login.html");
+      // ❌ DO NOT redirect instantly
+      setTimeout(() => {
+        if (!auth.currentUser) {
+          window.location.replace("login.html");
+        }
+      }, 1200);
       return;
     }
 
@@ -96,6 +95,7 @@
   <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
