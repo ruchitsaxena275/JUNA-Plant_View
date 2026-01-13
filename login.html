@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>JUNA Solar Plant Login</title>
+  <title>JUNA Login</title>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -18,7 +18,7 @@
 
 <script>
   const firebaseConfig = {
-   apiKey: "AIzaSyBvx1kW617AY4bjKDfGnWF8IlrGYZzS0os",
+    apiKey: "AIzaSyBvx1kW617AY4bjKDfGnWF8IlrGYZzS0os",
     authDomain: "junasolarmap.firebaseapp.com",
     projectId: "junasolarmap",
     appId: "1:218285140022:web:bf8e44b767cc8083d91097"
@@ -32,8 +32,9 @@
   function sendLink() {
     const email = document.getElementById("email").value;
 
+    // 🔴 MAGIC LINK MUST RETURN TO login.html
     const actionCodeSettings = {
-      url: "https://ruchitsaxena275.github.io/JUNA-Plant_View/index.html",
+      url: "https://ruchitsaxena275.github.io/JUNA-Plant_View/login.html",
       handleCodeInApp: true
     };
 
@@ -45,7 +46,7 @@
       .catch(err => alert(err.message));
   }
 
-  // 🔐 ONLY handle magic link here, no redirects elsewhere
+  // ✅ MAGIC LINK HANDLING (ONLY HERE)
   if (auth.isSignInWithEmailLink(window.location.href)) {
     let email = localStorage.getItem("emailForSignIn");
     if (!email) email = prompt("Confirm your email");
@@ -53,7 +54,6 @@
     auth.signInWithEmailLink(email, window.location.href)
       .then(() => {
         localStorage.removeItem("emailForSignIn");
-        // 🔥 DO NOT reload login page again
         window.location.replace("index.html");
       })
       .catch(err => alert(err.message));
