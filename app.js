@@ -47,11 +47,26 @@ fetch("data/SCB.geojson")
           color: "red",
           fillOpacity: 0.9
         }),
-      onEachFeature: (f, l) =>
-        l.bindPopup(`<b>SCB:</b> ${f.properties.Name || "NA"}`)
-      l.on("click", () => {
+    onEachFeature: (f, l) => {
+  l.bindPopup(`
+    <b>SCB:</b> ${f.properties.Name || "NA"}<br><br>
+    <button id="navBtn">➡️ Navigate</button>
+  `);
+
+  l.on("click", () => {
     window.lastSelectedLatLng = l.getLatLng();
   });
+
+  l.on("popupopen", () => {
+    const btn = document.getElementById("navBtn");
+    if (btn) {
+      btn.onclick = () => {
+        window.lastSelectedLatLng = l.getLatLng();
+        map.setView(l.getLatLng(), Math.max(map.getZoom(), 18));
+      };
+    }
+  });
+}
 }
     }).addTo(map);
 
@@ -107,24 +122,34 @@ fetch("data/tracker_points.geojson")
           color: "blue",
           fillOpacity: 0.9
         }),
-      onEachFeature: (f, l) => {
-        l.bindPopup(`
-  <b>Tracker ID:</b> ${f.properties.tracker_id}<br>
-  <b>ITC:</b> ${f.properties.Layer}<br>
-  <b>Robo IDs:</b> ${f.properties.robo_ids}<br>
-  <b>String 1:</b> ${f.properties.string_1 || ""}<br>
-  <b>String 2:</b> ${f.properties.string_2 || ""}<br>
-  <b>String 3:</b> ${f.properties.string_3 || ""}<br>
-  <b>String 4:</b> ${f.properties.string_4 || ""}<br><br>
+     onEachFeature: (f, l) => {
+  l.bindPopup(`
+    <b>Tracker ID:</b> ${f.properties.tracker_id}<br>
+    <b>ITC:</b> ${f.properties.Layer}<br>
+    <b>Robo IDs:</b> ${f.properties.robo_ids}<br>
+    <b>String 1:</b> ${f.properties.string_1 || ""}<br>
+    <b>String 2:</b> ${f.properties.string_2 || ""}<br>
+    <b>String 3:</b> ${f.properties.string_3 || ""}<br>
+    <b>String 4:</b> ${f.properties.string_4 || ""}<br><br>
+    <button id="navBtn">➡️ Navigate</button>
+  `);
 
-  <button onclick="navigateTo(${l.getLatLng().lat}, ${l.getLatLng().lng})">
-    ➡️ Navigate
-  </button>
-`);
-      }
-      l.on("click", () => {
-  window.lastSelectedLatLng = l.getLatLng();
-});
+  // Store target on click (already correct)
+  l.on("click", () => {
+    window.lastSelectedLatLng = l.getLatLng();
+  });
+
+  // ✅ SAFE button binding (IMPORTANT)
+  l.on("popupopen", () => {
+    const btn = document.getElementById("navBtn");
+    if (btn) {
+      btn.onclick = () => {
+        window.lastSelectedLatLng = l.getLatLng();
+        map.setView(l.getLatLng(), Math.max(map.getZoom(), 18));
+      };
+    }
+  });
+}
     }).addTo(map);
 
     // String search
@@ -382,6 +407,7 @@ function navigateTo(lat, lng) {
   // Optional: zoom slightly if needed
   map.setView([lat, lng], Math.max(map.getZoom(), 18));
 }
+
 
 
 
