@@ -47,27 +47,8 @@ fetch("data/SCB.geojson")
           color: "red",
           fillOpacity: 0.9
         }),
-    onEachFeature: (f, l) => {
-  l.bindPopup(`
-    <b>SCB:</b> ${f.properties.Name || "NA"}<br><br>
-    <button id="navBtn">➡️ Navigate</button>
-  `);
-
-  l.on("click", () => {
-    window.lastSelectedLatLng = l.getLatLng();
-  });
-
-  l.on("popupopen", () => {
-    const btn = document.getElementById("navBtn");
-    if (btn) {
-      btn.onclick = () => {
-        window.lastSelectedLatLng = l.getLatLng();
-        map.setView(l.getLatLng(), Math.max(map.getZoom(), 18));
-      };
-    }
-  });
-}
-}
+      onEachFeature: (f, l) =>
+        l.bindPopup(`<b>SCB:</b> ${f.properties.Name || "NA"}`)
     }).addTo(map);
 
     // SCB search
@@ -122,34 +103,17 @@ fetch("data/tracker_points.geojson")
           color: "blue",
           fillOpacity: 0.9
         }),
-     onEachFeature: (f, l) => {
-  l.bindPopup(`
-    <b>Tracker ID:</b> ${f.properties.tracker_id}<br>
-    <b>ITC:</b> ${f.properties.Layer}<br>
-    <b>Robo IDs:</b> ${f.properties.robo_ids}<br>
-    <b>String 1:</b> ${f.properties.string_1 || ""}<br>
-    <b>String 2:</b> ${f.properties.string_2 || ""}<br>
-    <b>String 3:</b> ${f.properties.string_3 || ""}<br>
-    <b>String 4:</b> ${f.properties.string_4 || ""}<br><br>
-    <button id="navBtn">➡️ Navigate</button>
-  `);
-
-  // Store target on click (already correct)
-  l.on("click", () => {
-    window.lastSelectedLatLng = l.getLatLng();
-  });
-
-  // ✅ SAFE button binding (IMPORTANT)
-  l.on("popupopen", () => {
-    const btn = document.getElementById("navBtn");
-    if (btn) {
-      btn.onclick = () => {
-        window.lastSelectedLatLng = l.getLatLng();
-        map.setView(l.getLatLng(), Math.max(map.getZoom(), 18));
-      };
-    }
-  });
-}
+      onEachFeature: (f, l) => {
+        l.bindPopup(`
+          <b>Tracker ID:</b> ${f.properties.tracker_id}<br>
+          <b>ITC:</b> ${f.properties.Layer}<br>
+          <b>Robo IDs:</b> ${f.properties.robo_ids}<br>
+          <b>String 1:</b> ${f.properties.string_1 || ""}<br>
+          <b>String 2:</b> ${f.properties.string_2 || ""}<br>
+          <b>String 3:</b> ${f.properties.string_3 || ""}<br>
+          <b>String 4:</b> ${f.properties.string_4 || ""}
+        `);
+      }
     }).addTo(map);
 
     // String search
@@ -203,7 +167,6 @@ function onLocationSuccess(position) {
     .setLatLng(latlng)
     .bindPopup(`📍 You are here<br>Accuracy: ${accuracy.toFixed(1)} m`);
 
-  updateDirection([lat, lng]);
   // ❌ NO auto zoom / NO auto centering
 }
 
@@ -332,83 +295,6 @@ function searchSCB() {
     alert("❌ SCB not found:\n" + target);
   }
 }
-// ================= DIRECTION NAVIGATION (ADD AT END) =================
-
-// Globals
-let directionLine = null;
-let arrowMarker = null;
-
-// Helpers
-function toRad(d) { return d * Math.PI / 180; }
-function toDeg(r) { return r * 180 / Math.PI; }
-
-// Distance in meters
-function getDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371000;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-// Bearing (direction)
-function getBearing(lat1, lon1, lat2, lon2) {
-  const y = Math.sin(toRad(lon2 - lon1)) * Math.cos(toRad(lat2));
-  const x =
-    Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
-    Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(toRad(lon2 - lon1));
-  return (toDeg(Math.atan2(y, x)) + 360) % 360;
-}
-
-// Draw arrow + distance
-function updateDirection(userLatLng) {
-  if (!window.lastSelectedLatLng) return;
-
-  const target = window.lastSelectedLatLng;
-
-  if (directionLine) map.removeLayer(directionLine);
-  if (arrowMarker) map.removeLayer(arrowMarker);
-
-  const dist = getDistance(
-    userLatLng[0], userLatLng[1],
-    target.lat, target.lng
-  ).toFixed(1);
-
-  const bearing = getBearing(
-    userLatLng[0], userLatLng[1],
-    target.lat, target.lng
-  );
-
-  directionLine = L.polyline([userLatLng, target], {
-    color: "red",
-    dashArray: "6,6",
-    weight: 3
-  }).addTo(map);
-
-  arrowMarker = L.marker(userLatLng, {
-    icon: L.divIcon({
-      className: "",
-      html: `<div style="
-        font-size:28px;
-        color:red;
-        transform:rotate(${bearing}deg);
-      ">➤</div>`
-    })
-  }).addTo(map)
-    .bindPopup(`➡️ Distance: <b>${dist} m</b>`);
-}
-// ================= NAVIGATE BUTTON HANDLER =================
-function navigateTo(lat, lng) {
-  window.lastSelectedLatLng = L.latLng(lat, lng);
-
-  // Optional: zoom slightly if needed
-  map.setView([lat, lng], Math.max(map.getZoom(), 18));
-}
-
-
 
 
 
