@@ -295,6 +295,67 @@ function searchSCB() {
     alert("❌ SCB not found:\n" + target);
   }
 }
+// ================= ROBO SEARCH =================
+function searchRobo() {
+  const input = document.getElementById("roboSearchInput");
+  if (!input) return;
+
+  const targetRobo = input.value.trim();
+  if (!targetRobo) {
+    alert("Please enter Robo ID");
+    return;
+  }
+
+  let found = false;
+  let bounds = [];
+
+  trackerLayer.eachLayer(layer => {
+    const f = layer.feature;
+    if (!f || !f.properties) return;
+
+    const roboStr = f.properties.robo_ids;
+    if (!roboStr) {
+      // reset color
+      layer.setStyle({ color: "blue", fillColor: "blue" });
+      return;
+    }
+
+    // Convert "2005,2006" → ["2005","2006"]
+    const roboList = roboStr.split(",").map(r => r.trim());
+
+    if (roboList.includes(targetRobo)) {
+      // ✅ Highlight match
+      layer.setStyle({
+        color: "orange",
+        fillColor: "orange"
+      });
+
+      // collect bounds
+      if (layer.getLatLng) {
+        bounds.push(layer.getLatLng());
+      } else if (layer.getBounds) {
+        bounds.push(layer.getBounds().getCenter());
+      }
+
+      found = true;
+    } else {
+      // reset non-matching
+      layer.setStyle({ color: "blue", fillColor: "blue" });
+    }
+  });
+
+  if (found && bounds.length > 0) {
+    const group = L.featureGroup(
+      bounds.map(latlng => L.marker(latlng))
+    );
+    map.fitBounds(group.getBounds(), { padding: [40, 40] });
+  }
+
+  if (!found) {
+    alert("❌ Robo ID not found: " + targetRobo);
+  }
+}
+
 
 
 
