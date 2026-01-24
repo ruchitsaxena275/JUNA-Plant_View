@@ -25,6 +25,11 @@ header img {
   margin-right: 12px;
 }
 
+header h1 {
+  color: red;          /* JUNA SOLAR FARM MAP text color */
+  font-size: 28px;     /* optional: adjust size if needed */
+  font-weight: bold;
+}
 /* ================= MAP ================= */
 #map {
   position: absolute;
@@ -148,6 +153,7 @@ footer {
   background: rgba(255, 255, 255, 0.8);
   padding: 4px 8px;
 }
+
 
 
 
