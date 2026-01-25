@@ -122,36 +122,7 @@ footer {
   padding: 4px 8px;
 }
 
-/* Hide Leaflet credit text only (keep OSM if added manually) */
+/* Hide Leaflet credit text only */
 .leaflet-control-attribution a[href*="leafletjs"] {
   display: none !important;
 }
-/* ================= MOBILE FIX ================= */
-@media (max-width: 768px) {
-
-  #search-panel {
-    width: 180px;              /* smaller panel */
-    top: 70px;
-    padding: 8px;
-    font-size: 12px;
-    max-height: 45vh;          /* IMPORTANT: limits height */
-  }
-
-  #search-panel h3 {
-    font-size: 12px;
-    margin: 4px 0;
-  }
-
-  #search-panel select,
-  #search-panel input,
-  #search-panel button {
-    font-size: 12px;
-    padding: 6px;
-  }
-
-  #map {
-    top: 60px;
-    bottom: 40px;
-  }
-}
-
