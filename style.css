@@ -29,8 +29,8 @@ header h1 {
 /* ================= MAP ================= */
 #map {
   position: absolute;
-  top: 60px;      /* below header */
-  bottom: 40px;   /* above footer */
+  top: 60px;        /* header height */
+  height: calc(100vh - 100px);  /* header (60) + footer (40) */
   left: 0;
   right: 0;
 }
@@ -126,3 +126,4 @@ footer {
 .leaflet-control-attribution a[href*="leafletjs"] {
   display: none !important;
 }
+
