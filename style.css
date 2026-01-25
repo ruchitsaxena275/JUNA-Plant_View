@@ -153,6 +153,11 @@ footer {
   background: rgba(255, 255, 255, 0.8);
   padding: 4px 8px;
 }
+/* REMOVE Leaflet logo / text from attribution */
+.leaflet-control-attribution a[href*="leafletjs"] {
+  display: none !important;
+}
+
 
 
 
