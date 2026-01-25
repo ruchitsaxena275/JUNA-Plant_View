@@ -355,13 +355,15 @@ function searchRobo() {
     alert("❌ Robo ID not found: " + targetRobo);
   }
 }
+// remove Leaflet prefix
 map.attributionControl.setPrefix(false);
-L.control
-  .attribution({ position: "bottomleft" })
-  .addAttribution(
-    "© 2026 <b>Ruchit Saxena</b> | All Rights Reserved | JUNA Solar Farm"
-  )
+
+// add your copyright
+map.attributionControl.addAttribution(
+  "© 2026 <b>Ruchit Saxena</b> | All Rights Reserved | JUNA Solar Farm"
+);
   .addTo(map);
+
 
 
 
