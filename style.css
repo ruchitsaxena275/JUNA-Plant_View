@@ -4,7 +4,7 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* ================= HEADER (FIXED) ================= */
+/* ================= HEADER ================= */
 header {
   position: fixed;
   top: 0;
@@ -19,26 +19,23 @@ header {
   z-index: 1000;
 }
 
-header img {
-  height: 40px;
-  margin-right: 12px;
+header h1 {
+  color: red;
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0;
 }
 
-header h1 {
-  color: red;          /* JUNA SOLAR FARM MAP text color */
-  font-size: 28px;     /* optional: adjust size if needed */
-  font-weight: bold;
-}
 /* ================= MAP ================= */
 #map {
   position: absolute;
-  top: 60px;          /* below header */
-  bottom: 40px;       /* above footer */
+  top: 60px;      /* below header */
+  bottom: 40px;   /* above footer */
   left: 0;
   right: 0;
 }
 
-/* ================= FOOTER (ALWAYS VISIBLE) ================= */
+/* ================= FOOTER ================= */
 footer {
   position: fixed;
   bottom: 0;
@@ -49,41 +46,15 @@ footer {
   line-height: 40px;
   background: #ffffff;
   border-top: 2px solid #000;
-  font-size: 36px;
+  font-size: 14px;
   font-weight: bold;
   z-index: 1000;
 }
 
-/* ================= ITC / POWER BLOCK LABEL STYLE ================= */
-
-/* Main ITC label (yellow style like your image) */
-.leaflet-tooltip.pb-label {
-  background: #ffd54f;              /* Yellow */
-  border: 2px solid #000;           /* Black border */
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 14px;
-  font-weight: bold;
-  color: #000;
-  box-shadow: 2px 2px 4px rgba(0,0,0,0.35);
-  white-space: nowrap;
-  text-align: center;
-}
-
-/* Remove default Leaflet tooltip arrow */
-.leaflet-tooltip.pb-label::before {
-  display: none;
-}
-
-/* Make labels float cleanly */
-.leaflet-tooltip {
-  pointer-events: none;
-}
-
 /* ================= SEARCH PANEL ================= */
 #search-panel {
-  position: fixed;        /* FIXED for mobile */
-  top: 80px;              /* below header */
+  position: fixed;
+  top: 80px;
   left: 10px;
   background: #ffffff;
   padding: 10px;
@@ -102,11 +73,12 @@ footer {
 }
 
 #search-panel select,
+#search-panel input,
 #search-panel button {
   width: 100%;
   margin-bottom: 6px;
   padding: 8px;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 #search-panel button {
@@ -121,12 +93,7 @@ footer {
   background: #1a5fb4;
 }
 
-/* Optional: slight hover glow (looks premium on mobile) */
-.leaflet-tooltip.pb-label:hover {
-  box-shadow: 3px 3px 6px rgba(0,0,0,0.4);
-}
 /* ================= LOCATE ME BUTTON ================= */
-
 #locateBtn {
   position: absolute;
   bottom: 80px;
@@ -146,34 +113,16 @@ footer {
 #locateBtn:hover {
   background: #1a5fb4;
 }
+
+/* ================= LEAFLET ATTRIBUTION ================= */
 .leaflet-control-attribution {
-  font-size: 28px;      /* try 14–16px */
+  font-size: 14px;
   font-weight: 600;
   background: rgba(255, 255, 255, 0.8);
   padding: 4px 8px;
 }
-/* REMOVE Leaflet logo / text from attribution */
+
+/* Hide Leaflet credit text only (keep OSM if added manually) */
 .leaflet-control-attribution a[href*="leafletjs"] {
   display: none !important;
 }
-@media (max-width: 768px) {
-  #search-panel {
-    width: 180px;
-    font-size: 12px;
-  }
-
-  #search-panel button,
-  #search-panel select,
-  #search-panel input {
-    font-size: 12px;
-    padding: 6px;
-  }
-}
-
-
-
-
-
-
-
-
