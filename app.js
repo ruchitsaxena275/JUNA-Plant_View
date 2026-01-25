@@ -1,15 +1,29 @@
-// ================= MAP =================
-const map = L.map("map").setView([28.15, 73.13], 12);
+document.addEventListener("DOMContentLoaded", () => {
 
-// ✅ FIX-3: force map resize (CRITICAL for mobile)
-setTimeout(() => {
-  map.invalidateSize();
-}, 500);
+  // ================= MAP =================
+  const map = L.map("map").setView([28.15, 73.13], 12);
 
-// Base map (online)
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 19
-}).addTo(map);
+  // Base map
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19
+  }).addTo(map);
+
+  // 🔥 FIX-A + FIX-3 (CRITICAL FOR MOBILE)
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 800);
+
+  // remove Leaflet prefix
+  map.attributionControl.setPrefix(false);
+
+  map.attributionControl.addAttribution(
+    "© 2026 <b>Ruchit Saxena</b> | All Rights Reserved | JUNA Solar Farm | © OpenStreetMap contributors"
+  );
+
+  // =====================================================
+  // 👉 PASTE *ALL* YOUR EXISTING CODE BELOW THIS LINE
+  // =====================================================
+
 
 // ================= UTILITY =================
 function pad2(num) {
@@ -367,6 +381,8 @@ map.attributionControl.setPrefix(false);
 map.attributionControl.addAttribution(
   "© 2026 <b>Ruchit Saxena</b> | All Rights Reserved | JUNA Solar Farm"
 );
+});
+
 
 
 
