@@ -31,7 +31,7 @@ header h1 {
 }
 /* ================= MAP ================= */
 #map {
-  position: fixed;
+  position: absolute;
   top: 60px;          /* below header */
   bottom: 40px;       /* above footer */
   left: 0;
@@ -169,6 +169,7 @@ footer {
     padding: 6px;
   }
 }
+
 
 
 
