@@ -25,6 +25,11 @@ header img {
   margin-right: 12px;
 }
 
+header h1 {
+  color: red;          /* JUNA SOLAR FARM MAP text color */
+  font-size: 28px;     /* optional: adjust size if needed */
+  font-weight: bold;
+}
 /* ================= MAP ================= */
 #map {
   position: absolute;
@@ -45,7 +50,7 @@ footer {
   line-height: 40px;
   background: #ffffff;
   border-top: 2px solid #000;
-  font-size: 14px;
+  font-size: 28px;
   font-weight: bold;
   z-index: 1000;
 }
@@ -120,4 +125,31 @@ footer {
 /* Optional: slight hover glow (looks premium on mobile) */
 .leaflet-tooltip.pb-label:hover {
   box-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+}
+/* ================= LOCATE ME BUTTON ================= */
+
+#locateBtn {
+  position: absolute;
+  bottom: 80px;
+  right: 15px;
+  z-index: 9999;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: bold;
+  background: #2c7be5;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+}
+
+#locateBtn:hover {
+  background: #1a5fb4;
+}
+.leaflet-control-attribution {
+  font-size: 24px;      /* try 14–16px */
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 4px 8px;
 }
