@@ -1,6 +1,11 @@
 // ================= MAP =================
 const map = L.map("map").setView([28.15, 73.13], 12);
 
+// ✅ FIX-3: force map resize (CRITICAL for mobile)
+setTimeout(() => {
+  map.invalidateSize();
+}, 500);
+
 // Base map (online)
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19
@@ -362,7 +367,6 @@ map.attributionControl.setPrefix(false);
 map.attributionControl.addAttribution(
   "© 2026 <b>Ruchit Saxena</b> | All Rights Reserved | JUNA Solar Farm"
 );
-  .addTo(map);
 
 
 
