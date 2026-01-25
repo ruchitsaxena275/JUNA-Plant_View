@@ -21,6 +21,7 @@
 
   <!-- ================= SEARCH PANEL ================= -->
 <div id="search-panel">
+
   <h3>🔎 String Search</h3>
 
   <select id="itcSelect"></select>
@@ -39,12 +40,25 @@
   <select id="scbSelectOnly"></select>
 
   <button onclick="searchSCB()">Search SCB</button>
+
+  <hr>
+
+  <!-- ✅ ROBO SEARCH (MUST BE INSIDE PANEL) -->
+  <h3>🤖 Robo Search</h3>
+
+  <input
+    type="text"
+    id="roboSearchInput"
+    placeholder="Enter Robo ID (e.g. 2005)"
+    style="width: 160px;"
+  />
+
+  <button onclick="searchRobo()">Search Robo</button>
+
 </div>
 
-<body>
   <header>
-    <img src="assets/company_logo.png" alt="Company Logo" />
-    <h1>JUNA SOLAR FARM MAP</h1>
+    <h1>JUNA SOLAR FARM MAP🔆</h1>
   </header>
 
   <div id="map"></div>
@@ -59,6 +73,7 @@
   <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
