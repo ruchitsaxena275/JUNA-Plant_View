@@ -355,6 +355,14 @@ function searchRobo() {
     alert("❌ Robo ID not found: " + targetRobo);
   }
 }
+// remove Leaflet prefix
+map.attributionControl.setPrefix(false);
+
+// add your copyright
+map.attributionControl.addAttribution(
+  "© 2026 <b>Ruchit Saxena</b> | All Rights Reserved | JUNA Solar Farm"
+);
+
 
 
 
