@@ -148,7 +148,7 @@ footer {
   background: #1a5fb4;
 }
 .leaflet-control-attribution {
-  font-size: 36px;      /* try 14–16px */
+  font-size: 28px;      /* try 14–16px */
   font-weight: 600;
   background: rgba(255, 255, 255, 0.8);
   padding: 4px 8px;
@@ -157,6 +157,7 @@ footer {
 .leaflet-control-attribution a[href*="leafletjs"] {
   display: none !important;
 }
+
 
 
 
