@@ -2,84 +2,79 @@
 <html lang="en">
 <head>
   <script>
-  (function () {
-    const PASSWORD = "juna@123";   // 🔐 CHANGE THIS PASSWORD
+    (function () {
+      const PASSWORD = "juna@123"; // 🔐 CHANGE THIS PASSWORD
 
-    // check if already unlocked in this browser session
-    if (sessionStorage.getItem("juna_access") === "granted") {
-      return; // already authenticated
-    }
+      if (sessionStorage.getItem("juna_access") === "granted") {
+        return;
+      }
 
-    const entered = prompt("🔐 Enter password to access JUNA Plant View:");
+      const entered = prompt("🔐 Enter password to access JUNA Plant View:");
 
-    if (entered !== PASSWORD) {
-      alert("❌ Access denied");
-      // stop page from loading
-      document.documentElement.innerHTML = "";
-      throw new Error("Unauthorized access");
-    }
+      if (entered !== PASSWORD) {
+        alert("❌ Access denied");
+        document.documentElement.innerHTML = "";
+        throw new Error("Unauthorized access");
+      }
 
-    // mark access granted for this session
-    sessionStorage.setItem("juna_access", "granted");
-  })();
-</script>
+      sessionStorage.setItem("juna_access", "granted");
+    })();
+  </script>
+
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title> JUNA SOLAR FARM MAP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>JUNA SOLAR FARM MAP</title>
 
   <!-- Leaflet -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <!-- Leaflet Search -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css"
-  />
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css" />
 
   <link rel="stylesheet" href="style.css" />
 </head>
 
- <!-- ================= SEARCH PANEL ================= -->
-<div id="search-panel">
-
-  <h3>🔎 String Search</h3>
-
-  <select id="itcSelect"></select>
-  <select id="invSelect"></select>
-  <select id="scbSelect"></select>
-  <select id="stringSelect"></select>
-
-  <button onclick="searchString()">Search String</button>
-
-  <hr>
-
-  <h3>🔎 SCB Search</h3>
-
-  <select id="itcSelectScb"></select>
-  <select id="invSelectScb"></select>
-  <select id="scbSelectOnly"></select>
-
-  <button onclick="searchSCB()">Search SCB</button>
-
-  <hr>
-
-  <!-- ✅ ROBO SEARCH (MUST BE INSIDE PANEL) -->
-  <h3>🤖 Robo Search</h3>
-
-  <input
-    type="text"
-    id="roboSearchInput"
-    placeholder="Enter Robo ID (e.g. 2005)"
-    style="width: 160px;"
-  />
-
-  <button onclick="searchRobo()">Search Robo</button>
-
-</div>
 <body>
+
+  <!-- ================= SEARCH PANEL ================= -->
+  <div id="search-panel">
+
+    <h3>🔎 String Search</h3>
+
+    <select id="itcSelect"></select>
+    <select id="invSelect"></select>
+    <select id="scbSelect"></select>
+    <select id="stringSelect"></select>
+
+    <button onclick="searchString()">Search String</button>
+
+    <hr>
+
+    <h3>🔎 SCB Search</h3>
+
+    <select id="itcSelectScb"></select>
+    <select id="invSelectScb"></select>
+    <select id="scbSelectOnly"></select>
+
+    <button onclick="searchSCB()">Search SCB</button>
+
+    <hr>
+
+    <h3>🤖 Robo Search</h3>
+
+    <input
+      type="text"
+      id="roboSearchInput"
+      placeholder="Enter Robo ID (e.g. 2005)"
+      style="width: 160px;" />
+
+    <button onclick="searchRobo()">Search Robo</button>
+
+  </div>
+
   <header>
     <h1>JUNA SOLAR FARM MAP🔆</h1>
   </header>
@@ -87,6 +82,7 @@
   <div id="map"></div>
 
   <button id="locateBtn">📍 Locate Me</button>
+
   <footer>
     Developed by <b>Ruchit Saxena</b>
   </footer>
@@ -95,16 +91,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.js"></script>
   <script src="app.js"></script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
