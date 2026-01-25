@@ -1,5 +1,6 @@
 /* ================= BASE ================= */
-body {
+html, body {
+  height: 100%;
   margin: 0;
   font-family: Arial, sans-serif;
 }
@@ -29,10 +30,10 @@ header h1 {
 /* ================= MAP ================= */
 #map {
   position: absolute;
-  top: 60px;        /* header height */
-  height: calc(100vh - 100px);  /* header (60) + footer (40) */
+  top: 0;
   left: 0;
   right: 0;
+  bottom: 0;
 }
 
 /* ================= FOOTER ================= */
@@ -126,4 +127,3 @@ footer {
 .leaflet-control-attribution a[href*="leafletjs"] {
   display: none !important;
 }
-
