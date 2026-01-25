@@ -2,7 +2,6 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  overflow: hidden; /* prevent page scrolling (important for mobile) */
 }
 
 /* ================= HEADER (FIXED) ================= */
@@ -32,7 +31,7 @@ header h1 {
 }
 /* ================= MAP ================= */
 #map {
-  position: absolute;
+  position: fixed;
   top: 60px;          /* below header */
   bottom: 40px;       /* above footer */
   left: 0;
@@ -157,6 +156,20 @@ footer {
 .leaflet-control-attribution a[href*="leafletjs"] {
   display: none !important;
 }
+@media (max-width: 768px) {
+  #search-panel {
+    width: 180px;
+    font-size: 12px;
+  }
+
+  #search-panel button,
+  #search-panel select,
+  #search-panel input {
+    font-size: 12px;
+    padding: 6px;
+  }
+}
+
 
 
 
