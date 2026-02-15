@@ -360,8 +360,9 @@ map.attributionControl.setPrefix(false);
 
 // add your copyright
 map.attributionControl.addAttribution(
-  "© 2026 <b>Ruchit Saxena</b> | All Rights Reserved | JUNA Solar Farm"
+  "© 2026 <b>Ruchit Saxena</b> | All Rights Reserved | Solar Farm"
 );
+
 
 
 
