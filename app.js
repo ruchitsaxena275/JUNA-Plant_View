@@ -106,6 +106,7 @@ fetch("data/tracker_points.geojson")
       onEachFeature: (f, l) => {
         l.bindPopup(`
           <b>Tracker ID:</b> ${f.properties.tracker_id}<br>
+          <b>Node ID:</b> ${feature.properties.node_id}<br>
           <b>ITC:</b> ${f.properties.Layer}<br>
           <b>Robo IDs:</b> ${f.properties.robo_ids}<br>
           <b>String 1:</b> ${f.properties.string_1 || ""}<br>
@@ -362,6 +363,7 @@ map.attributionControl.setPrefix(false);
 map.attributionControl.addAttribution(
   "© 2026 <b>Ruchit Saxena</b> | All Rights Reserved | Solar Farm"
 );
+
 
 
 
