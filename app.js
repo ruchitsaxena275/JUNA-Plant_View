@@ -512,7 +512,7 @@ if(gw) return d.Gateway == gw;
 let totalDC = 0;
 
 filtered.forEach(r => {
-totalDC += Number(r["DC capacity clean"] || 0);
+totalDC += Number(r.DC_capacity_clean || 0);
 });
 
 document.getElementById("cleanResult").innerHTML = `<b>Total Robots:</b> ${filtered.length}<br> <b>Total DC Cleaned:</b> ${totalDC.toFixed(2)} MW`;
@@ -545,6 +545,7 @@ XLSX.utils.book_append_sheet(workbook, worksheet, "Cleaning Data");
 XLSX.writeFile(workbook, "robot_cleaning_report.xlsx");
 
 }
+
 
 
 
