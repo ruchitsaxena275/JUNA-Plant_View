@@ -449,7 +449,7 @@ if(!sel) return;
 
 let gateways = [...new Set(cleaningData.map(d => d.Gateway_Adjusted))];
 
-sel.innerHTML = '<option value="">Select Gateway</option>';
+sel.innerHTML = "";
 
 gateways.forEach(g => {
 
@@ -470,14 +470,15 @@ if(!gatewaySel) return;
 
 gatewaySel.addEventListener("change", function(){
 
-let gw = this.value;
+const selectedGateways =
+[...this.selectedOptions].map(o => o.value);
 
 const robotSel = document.getElementById("robotSelect");
 
-robotSel.innerHTML = '<option value="">Select Robot</option>';
+robotSel.innerHTML = "";
 
 let robots = cleaningData
-.filter(d => d.Gateway_Adjusted == gw)
+.filter(d => selectedGateways.includes(String(d.Gateway_Adjusted)))
 .map(d => d.Robo_ID);
 
 robots = [...new Set(robots)];
@@ -487,6 +488,7 @@ robots.forEach(r => {
 let opt = document.createElement("option");
 opt.value = r;
 opt.textContent = "Robot " + r;
+opt.selected = true;
 
 robotSel.appendChild(opt);
 
@@ -498,13 +500,12 @@ robotSel.appendChild(opt);
 
 function generateCleaningReport(){
 
-let gw = document.getElementById("gatewaySelect").value;
-let robot = document.getElementById("robotSelect").value;
+let robots = [...document.getElementById("robotSelect").selectedOptions]
+.map(o => o.value);
 
 let filtered = cleaningData.filter(d => {
 
-if(robot) return d.Robo_ID == robot;
-if(gw) return d.Gateway_Adjusted == gw;
+if(robots.length) return robots.includes(String(d.Robo_ID));
 
 });
 
@@ -523,13 +524,12 @@ document.getElementById("cleanResult").innerHTML = `
 
 function downloadCleaningExcel(){
 
-let gw = document.getElementById("gatewaySelect").value;
-let robot = document.getElementById("robotSelect").value;
+let robots = [...document.getElementById("robotSelect").selectedOptions]
+.map(o => o.value);
 
 let filtered = cleaningData.filter(d => {
 
-if(robot) return d.Robo_ID == robot;
-if(gw) return d.Gateway_Adjusted == gw;
+if(robots.length) return robots.includes(String(d.Robo_ID));
 
 });
 
