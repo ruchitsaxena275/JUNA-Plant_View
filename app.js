@@ -434,21 +434,22 @@ alert("❌ Node ID not found: " + nodeID);
 
 let cleaningData = [];
 
-// Load cleaning dataset
 fetch("data/robot_cleaning.json")
 .then(r => r.json())
 .then(data => {
 cleaningData = data;
 populateGatewayDropdown();
-});
+})
+.catch(err => console.error("Cleaning data error:", err));
 
-// Fill gateway dropdown
 function populateGatewayDropdown(){
 
 const sel = document.getElementById("gatewaySelect");
 if(!sel) return;
 
-let gateways = [...new Set(cleaningData.map(d => d.Gateway_Adjusted)))];
+let gateways = [...new Set(cleaningData.map(d => d.Gateway_Adjusted))];
+
+sel.innerHTML = '<option value="">Select Gateway</option>';
 
 gateways.forEach(g => {
 
@@ -462,7 +463,6 @@ sel.appendChild(opt);
 
 }
 
-// Auto filter robots when gateway selected
 document.addEventListener("DOMContentLoaded", () => {
 
 const gatewaySel = document.getElementById("gatewaySelect");
@@ -496,7 +496,6 @@ robotSel.appendChild(opt);
 
 });
 
-// Generate report
 function generateCleaningReport(){
 
 let gw = document.getElementById("gatewaySelect").value;
@@ -505,21 +504,23 @@ let robot = document.getElementById("robotSelect").value;
 let filtered = cleaningData.filter(d => {
 
 if(robot) return d.Robo_ID == robot;
-if(gw) return d.Gateway == gw;
+if(gw) return d.Gateway_Adjusted == gw;
 
 });
 
 let totalDC = 0;
 
 filtered.forEach(r => {
-totalDC += Number(r.DC_capacity_clean || 0);
+totalDC += Number(r["DC capacity clean"] || 0);
 });
 
-document.getElementById("cleanResult").innerHTML = `<b>Total Robots:</b> ${filtered.length}<br> <b>Total DC Cleaned:</b> ${totalDC.toFixed(2)} MW`;
+document.getElementById("cleanResult").innerHTML = `
+<b>Total Records:</b> ${filtered.length}<br>
+<b>Total DC Cleaned:</b> ${totalDC.toFixed(2)} MW
+`;
 
 }
 
-// Download Excel
 function downloadCleaningExcel(){
 
 let gw = document.getElementById("gatewaySelect").value;
@@ -528,7 +529,7 @@ let robot = document.getElementById("robotSelect").value;
 let filtered = cleaningData.filter(d => {
 
 if(robot) return d.Robo_ID == robot;
-if(gw) return d.Gateway == gw;
+if(gw) return d.Gateway_Adjusted == gw;
 
 });
 
