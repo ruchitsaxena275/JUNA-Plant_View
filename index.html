@@ -71,6 +71,37 @@
 
 <button onclick="searchNode()">Search Node</button>
 
+<hr>
+
+<h3>🧹 Robot Cleaning Data</h3>
+
+<label>Mode</label>
+<select id="cleanMode">
+<option value="gateway">Gateway Wise</option>
+<option value="robot">Robot Wise</option>
+</select>
+
+<br><br>
+
+<label>Gateway</label>
+<select id="gatewaySelect">
+<option value="">Select Gateway</option>
+</select>
+
+<br><br>
+
+<label>Robot</label>
+<select id="robotSelect">
+<option value="">Select Robot</option>
+</select>
+
+<br><br>
+
+<button onclick="generateCleaningReport()">Generate Report</button>
+<button onclick="downloadCleaningExcel()">Download Excel</button>
+
+<div id="cleanResult" style="margin-top:10px;font-size:13px;"></div>
+
 </div>
 
   <header>
@@ -86,11 +117,10 @@
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.js"></script>
+
+  <!-- Excel export library -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
   <script src="app.js"></script>
 </body>
 </html>
-
-
-
-
-
