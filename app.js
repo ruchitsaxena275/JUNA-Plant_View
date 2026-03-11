@@ -364,6 +364,51 @@ map.attributionControl.addAttribution(
   "© 2026 <b>Ruchit Saxena</b> | All Rights Reserved | Solar Farm"
 );
 
+function searchTracker(){
+
+var trackerID = document.getElementById("trackerSearchInput").value;
+
+trackerLayer.eachLayer(function(layer){
+
+if(layer.feature.properties["Tracker ID"] == trackerID){
+
+map.fitBounds(layer.getBounds());
+
+layer.setStyle({
+color: "yellow",
+weight: 5
+});
+
+layer.openPopup();
+
+}
+
+});
+
+}
+
+function searchNode(){
+
+var nodeID = document.getElementById("nodeSearchInput").value;
+
+trackerLayer.eachLayer(function(layer){
+
+if(layer.feature.properties["Node ID"] == nodeID){
+
+map.fitBounds(layer.getBounds());
+
+layer.setStyle({
+color: "red",
+weight: 5
+});
+
+layer.openPopup();
+
+}
+
+});
+
+}
 
 
 
