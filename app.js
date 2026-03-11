@@ -366,13 +366,16 @@ map.attributionControl.addAttribution(
 
 function searchTracker(){
 
-var trackerID = document.getElementById("trackerSearchInput").value;
+var trackerID = document.getElementById("trackerSearchInput").value.trim();
+var found = false;
 
 trackerLayer.eachLayer(function(layer){
 
-if(layer.feature.properties["Tracker ID"] == trackerID){
+if(layer.feature.properties.tracker_id == trackerID){
 
-map.fitBounds(layer.getBounds());
+var center = layer.getLatLng ? layer.getLatLng() : layer.getBounds().getCenter();
+
+map.setView(center, 19);
 
 layer.setStyle({
 color: "yellow",
@@ -381,21 +384,32 @@ weight: 5
 
 layer.openPopup();
 
+found = true;
+
 }
 
 });
+
+if(!found){
+alert("❌ Tracker ID not found: " + trackerID);
+}
 
 }
 
 function searchNode(){
 
-var nodeID = document.getElementById("nodeSearchInput").value;
+var nodeID = document.getElementById("nodeSearchInput").value.trim().toUpperCase();
+var found = false;
 
 trackerLayer.eachLayer(function(layer){
 
-if(layer.feature.properties["Node ID"] == nodeID){
+var layerNode = layer.feature.properties.node_id;
 
-map.fitBounds(layer.getBounds());
+if(layerNode && layerNode.toUpperCase() === nodeID){
+
+var center = layer.getLatLng ? layer.getLatLng() : layer.getBounds().getCenter();
+
+map.setView(center, 19);
 
 layer.setStyle({
 color: "red",
@@ -404,11 +418,18 @@ weight: 5
 
 layer.openPopup();
 
+found = true;
+
 }
 
 });
 
+if(!found){
+alert("❌ Node ID not found: " + nodeID);
 }
+
+}
+
 
 
 
