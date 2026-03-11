@@ -427,6 +427,8 @@ found = true;
 if(!found){
 alert("❌ Node ID not found: " + nodeID);
 }
+
+}
   
 /* ================= ROBOT CLEANING DATA ================= */
 
@@ -544,6 +546,7 @@ XLSX.utils.book_append_sheet(workbook, worksheet, "Cleaning Data");
 XLSX.writeFile(workbook, "robot_cleaning_report.xlsx");
 
 }
+
 
 
 
