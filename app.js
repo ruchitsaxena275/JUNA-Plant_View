@@ -430,6 +430,122 @@ alert("❌ Node ID not found: " + nodeID);
 
 }
 
+/* ================= ROBOT CLEANING DATA ================= */
+
+let cleaningData = [];
+
+// Load cleaning dataset
+fetch("data/robot_cleaning.json")
+.then(r => r.json())
+.then(data => {
+cleaningData = data;
+populateGatewayDropdown();
+});
+
+// Fill gateway dropdown
+function populateGatewayDropdown(){
+
+const sel = document.getElementById("gatewaySelect");
+if(!sel) return;
+
+let gateways = [...new Set(cleaningData.map(d => d.Gateway))];
+
+gateways.forEach(g => {
+
+let opt = document.createElement("option");
+opt.value = g;
+opt.textContent = "Gateway " + g;
+
+sel.appendChild(opt);
+
+});
+
+}
+
+// Auto filter robots when gateway selected
+document.addEventListener("DOMContentLoaded", () => {
+
+const gatewaySel = document.getElementById("gatewaySelect");
+if(!gatewaySel) return;
+
+gatewaySel.addEventListener("change", function(){
+
+let gw = this.value;
+
+const robotSel = document.getElementById("robotSelect");
+
+robotSel.innerHTML = '<option value="">Select Robot</option>';
+
+let robots = cleaningData
+.filter(d => d.Gateway == gw)
+.map(d => d.Robo_ID);
+
+robots = [...new Set(robots)];
+
+robots.forEach(r => {
+
+let opt = document.createElement("option");
+opt.value = r;
+opt.textContent = "Robot " + r;
+
+robotSel.appendChild(opt);
+
+});
+
+});
+
+});
+
+// Generate report
+function generateCleaningReport(){
+
+let gw = document.getElementById("gatewaySelect").value;
+let robot = document.getElementById("robotSelect").value;
+
+let filtered = cleaningData.filter(d => {
+
+if(robot) return d.Robo_ID == robot;
+if(gw) return d.Gateway == gw;
+
+});
+
+let totalDC = 0;
+
+filtered.forEach(r => {
+totalDC += Number(r.DC_capacity_clean || 0);
+});
+
+document.getElementById("cleanResult").innerHTML = `<b>Total Robots:</b> ${filtered.length}<br> <b>Total DC Cleaned:</b> ${totalDC.toFixed(2)} MW`;
+
+}
+
+// Download Excel
+function downloadCleaningExcel(){
+
+let gw = document.getElementById("gatewaySelect").value;
+let robot = document.getElementById("robotSelect").value;
+
+let filtered = cleaningData.filter(d => {
+
+if(robot) return d.Robo_ID == robot;
+if(gw) return d.Gateway == gw;
+
+});
+
+if(filtered.length === 0){
+alert("No data to export");
+return;
+}
+
+let worksheet = XLSX.utils.json_to_sheet(filtered);
+let workbook = XLSX.utils.book_new();
+
+XLSX.utils.book_append_sheet(workbook, worksheet, "Cleaning Data");
+
+XLSX.writeFile(workbook, "robot_cleaning_report.xlsx");
+
+}
+
 
 
 
