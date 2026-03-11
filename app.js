@@ -448,7 +448,7 @@ function populateGatewayDropdown(){
 const sel = document.getElementById("gatewaySelect");
 if(!sel) return;
 
-let gateways = [...new Set(cleaningData.map(d => d.Gateway))];
+let gateways = [...new Set(cleaningData.map(d => d.Gateway_Adjusted)))];
 
 gateways.forEach(g => {
 
@@ -477,7 +477,7 @@ const robotSel = document.getElementById("robotSelect");
 robotSel.innerHTML = '<option value="">Select Robot</option>';
 
 let robots = cleaningData
-.filter(d => d.Gateway == gw)
+.filter(d => d.Gateway_Adjusted == gw)
 .map(d => d.Robo_ID);
 
 robots = [...new Set(robots)];
@@ -545,6 +545,7 @@ XLSX.utils.book_append_sheet(workbook, worksheet, "Cleaning Data");
 XLSX.writeFile(workbook, "robot_cleaning_report.xlsx");
 
 }
+
 
 
 
