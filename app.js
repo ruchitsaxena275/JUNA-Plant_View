@@ -517,7 +517,7 @@ totalDC += Number(r["DC capacity clean"] || 0);
 
 document.getElementById("cleanResult").innerHTML = `
 <b>Total Records:</b> ${filtered.length}<br>
-<b>Total DC Cleaned:</b> ${totalDC.toFixed(2)} MW
+<b>Total DC Cleaned:</b> ${totalDC.toFixed(2)} MWp
 `;
 
 }
