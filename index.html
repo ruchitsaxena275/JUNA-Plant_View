@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title> SOLAR FARM MAP</title>
 
   <!-- Leaflet -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <!-- Leaflet Search -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <link rel="stylesheet" href="style.css" />
 </head>
 
-  <!-- ================= SEARCH PANEL ================= -->
+<!-- ================= SEARCH PANEL ================= -->
 <div id="search-panel">
 
   <h3>🔎 String Search</h3>
@@ -46,71 +44,126 @@
   <!-- ✅ ROBO SEARCH (MUST BE INSIDE PANEL) -->
   <h3>🤖 Robo Search</h3>
 
-  <input
-    type="text"
-    id="roboSearchInput"
-    placeholder="Enter Robo ID (e.g. 2005)"
-    style="width: 160px;"
-  />
+  <input type="text" id="roboSearchInput" placeholder="Enter Robo ID (e.g. 2005)" style="width: 160px;" />
 
   <button onclick="searchRobo()">Search Robo</button>
 
   <hr>
 
-🔎 Tracker Search
+  🔎 Tracker Search
 
-<input type="text" id="trackerSearchInput" placeholder="Enter Tracker ID">
+  <input type="text" id="trackerSearchInput" placeholder="Enter Tracker ID">
 
-<button onclick="searchTracker()">Search Tracker</button>
+  <button onclick="searchTracker()">Search Tracker</button>
 
-<br><br>
+  <br><br>
 
-🔎 Node Search
+  🔎 Node Search
 
-<input type="text" id="nodeSearchInput" placeholder="Enter Node ID">
+  <input type="text" id="nodeSearchInput" placeholder="Enter Node ID">
 
-<button onclick="searchNode()">Search Node</button>
+  <button onclick="searchNode()">Search Node</button>
 
-<hr>
+  <hr>
 
-<h3>🧹 Robot Cleaning Data</h3>
+  <h3>🧹 Robot Cleaning Data</h3>
 
-<label>Mode</label>
-<select id="cleanMode">
-<option value="gateway">Gateway Wise</option>
-<option value="robot">Robot Wise</option>
-</select>
+  <label>Mode</label>
+  <select id="cleanMode">
+    <option value="gateway">Gateway Wise</option>
+    <option value="robot">Robot Wise</option>
+  </select>
 
-<br><br>
+  <br><br>
 
-<label>Gateway</label>
-<select id="gatewaySelect" multiple size="5">
-</select>
-<br><br>
+  <label>Gateway</label>
+  <select id="gatewaySelect" multiple size="5">
+  </select>
+  <br><br>
 
-<label>Robot</label>
-<select id="robotSelect" multiple size="8">
-</select>
-<br><br>
+  <label>Robot</label>
+  <select id="robotSelect" multiple size="8">
+  </select>
+  <br><br>
 
-<button onclick="generateCleaningReport()">Generate Report</button>
-<button onclick="downloadCleaningExcel()">Download Excel</button>
+  <button onclick="generateCleaningReport()">Generate Report</button>
+  <button onclick="downloadCleaningExcel()">Download Excel</button>
 
-<div id="cleanResult" style="margin-top:10px;font-size:13px;"></div>
+  <div id="cleanResult" style="margin-top:10px;font-size:13px;"></div>
 
 </div>
 
-  <header>
-    <h1>SOLAR FARM MAP🔆</h1>
-  </header>
+<header>
+  <h1>SOLAR FARM MAP🔆</h1>
+</header>
 
-  <div id="map"></div>
+<div id="map"></div>
 
-  <footer>
-    Developed by <b>Ruchit Saxena</b>
-  </footer>
+<footer>
+  Developed by <b>Ruchit Saxena</b>
+</footer>
 
-  <!-- Scripts -->
+<!-- ================= PORTAL UPGRADE NOTIFICATION SYSTEM ================= -->
+<!-- Bottom Notification Banner -->
+<div id="upgrade-banner" class="upgrade-banner">
+  <div class="banner-badge">
+    <span class="pulse-dot"></span>
+    Notice
+  </div>
+  <span class="banner-text">Portal Upgrade Soon ...</span>
+  <div class="banner-actions">
+    <button id="banner-details-btn" class="banner-btn-details">Details</button>
+    <button id="banner-close-btn" class="banner-btn-close" aria-label="Close">&times;</button>
+  </div>
+</div>
+
+<!-- Upgrade Announcement Modal -->
+<div id="upgrade-modal" class="upgrade-modal-overlay" aria-hidden="true">
+  <div class="upgrade-modal-content">
+    <button id="modal-close-icon" class="modal-close-icon" aria-label="Close">&times;</button>
+
+    <div class="modal-header">
+      <i class="fa fa-bullhorn modal-icon"></i>
+      <h2>Portal Upgrade Announcement</h2>
+    </div>
+
+    <div class="modal-body">
+      <p class="modal-intro">
+        We are excited to announce that a new, upgraded web application of the Solar Farm Map will be launching shortly!
+      </p>
+
+      <h3>Key Enhancements:</h3>
+      <ul class="modal-enhancements">
+        <li>Centralised portal platform</li>
+        <li>Enhanced map and interaction experience</li>
+        <li>Available and compatible for all devices including Android, iOS, and Windows</li>
+        <li>Enhanced search, filter, and reporting features</li>
+        <li>Project admin dashboard to manage team locally</li>
+        <li>Data updation and addition options added</li>
+      </ul>
+
+      <div class="modal-signature">
+        - Team <span class="blurred-brand">GridNura</span>
+      </div>
+
+      <div class="modal-warning">
+        <i class="fa fa-exclamation-triangle warning-icon"></i>
+        <span><strong>Warning:</strong> Existing users may be required to re-login after the upgrade.</span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button id="modal-got-it-btn" class="modal-btn-primary">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Action Trigger Button -->
+<button id="upgrade-fab" class="upgrade-fab" aria-label="View Upgrade Announcement" title="Portal Upgrade Info">
+  <i class="fa fa-bullhorn"></i>
+</button>
+
+<!-- Scripts -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.js"></script>
 
@@ -119,6 +172,5 @@
 
 <script src="app.js"></script>
 </body>
+
 </html>
-
-

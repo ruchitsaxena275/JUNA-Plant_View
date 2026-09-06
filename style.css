@@ -153,3 +153,388 @@ footer {
   background: rgba(255, 255, 255, 0.8);
   padding: 4px 8px;
 }
+
+/* ================= PORTAL UPGRADE NOTIFICATION SYSTEM ================= */
+
+/* --- 1. Bottom Notification Banner --- */
+.upgrade-banner {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.35), 0 8px 32px rgba(0, 0, 0, 0.4);
+  border-radius: 50px;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  max-width: 90vw;
+  box-sizing: border-box;
+  animation: slideUpBanner 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+}
+
+.upgrade-banner.dismissed {
+  opacity: 0;
+  transform: translate(-50%, 20px);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@keyframes slideUpBanner {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 40px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.banner-badge {
+  background: #ff6b00;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.8);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.banner-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #f8fafc;
+  white-space: nowrap;
+}
+
+.banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.banner-btn-details {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.banner-btn-details:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.banner-btn-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.banner-btn-close:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* --- 2. Upgrade Announcement Modal --- */
+.upgrade-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10005;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  box-sizing: border-box;
+}
+
+.upgrade-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.upgrade-modal-content {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  color: #f8fafc;
+  padding: 24px;
+  position: relative;
+  transform: scale(0.9);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.upgrade-modal-overlay.active .upgrade-modal-content {
+  transform: scale(1);
+}
+
+.modal-close-icon {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.modal-close-icon:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+
+.modal-icon {
+  color: #ff6b00;
+  font-size: 24px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.modal-body {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.modal-intro {
+  color: #cbd5e1;
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+.modal-body h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #38bdf8;
+  margin: 16px 0 10px 0;
+}
+
+.modal-enhancements {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0 0 20px 0;
+}
+
+.modal-enhancements li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 8px;
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+.modal-enhancements li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #22c55e;
+  font-weight: bold;
+}
+
+.modal-signature {
+  text-align: right;
+  font-size: 14px;
+  font-style: italic;
+  color: #94a3b8;
+  margin: 16px 0 20px 0;
+}
+
+.blurred-brand {
+  filter: blur(4px);
+  display: inline-block;
+  user-select: none;
+  -webkit-user-select: none;
+  color: #ff6b00;
+  font-weight: bold;
+}
+
+.modal-warning {
+  background: rgba(245, 158, 11, 0.12);
+  border-left: 4px solid #f59e0b;
+  padding: 12px 14px;
+  border-radius: 6px;
+  color: #fef3c7;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.warning-icon {
+  color: #f59e0b;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.modal-footer {
+  margin-top: 12px;
+}
+
+.modal-btn-primary {
+  background: linear-gradient(135deg, #ff6b00, #ea580c);
+  color: #ffffff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+  transition: transform 0.1s, box-shadow 0.2s, background 0.2s;
+}
+
+.modal-btn-primary:hover {
+  background: linear-gradient(135deg, #ea580c, #c2410c);
+  box-shadow: 0 6px 16px rgba(255, 107, 0, 0.45);
+}
+
+/* --- 3. Floating Action Button --- */
+.upgrade-fab {
+  position: fixed;
+  bottom: 50px;
+  right: 10px;
+  z-index: 10001;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6b00, #ea580c);
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+}
+
+.upgrade-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(255, 107, 0, 0.6);
+}
+
+.upgrade-fab:active {
+  transform: scale(0.95);
+}
+
+/* Responsive adjust for small mobile screens */
+@media (max-width: 480px) {
+  .upgrade-banner {
+    padding: 6px 12px;
+    gap: 8px;
+    bottom: 12px;
+  }
+  
+  .banner-badge {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+  
+  .banner-text {
+    font-size: 12px;
+  }
+  
+  .banner-btn-details {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+  
+  .upgrade-modal-content {
+    padding: 18px;
+  }
+}
+

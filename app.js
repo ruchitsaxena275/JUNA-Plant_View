@@ -547,6 +547,74 @@ XLSX.writeFile(workbook, "robot_cleaning_report.xlsx");
 
 }
 
+/* ================= PORTAL UPGRADE NOTIFICATION SYSTEM ================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const banner = document.getElementById("upgrade-banner");
+  const modal = document.getElementById("upgrade-modal");
+  const fab = document.getElementById("upgrade-fab");
+  const bannerDetailsBtn = document.getElementById("banner-details-btn");
+  const bannerCloseBtn = document.getElementById("banner-close-btn");
+  const modalCloseIcon = document.getElementById("modal-close-icon");
+  const modalGotItBtn = document.getElementById("modal-got-it-btn");
+
+  // 1. Session Storage check for bottom banner dismissal
+  const isDismissed = sessionStorage.getItem("portal_upgrade_banner_dismissed");
+  if (isDismissed === "true" && banner) {
+    banner.classList.add("dismissed");
+  }
+
+  // Helper functions for modal visibility
+  function openModal() {
+    if (modal) {
+      modal.classList.add("active");
+      modal.setAttribute("aria-hidden", "false");
+    }
+  }
+
+  function closeModal() {
+    if (modal) {
+      modal.classList.remove("active");
+      modal.setAttribute("aria-hidden", "true");
+    }
+  }
+
+  // 2. Banner Dismissal Logic
+  if (bannerCloseBtn && banner) {
+    bannerCloseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      banner.classList.add("dismissed");
+      sessionStorage.setItem("portal_upgrade_banner_dismissed", "true");
+    });
+  }
+
+  // 3. Open Modal triggers (Details button & FAB)
+  if (bannerDetailsBtn) {
+    bannerDetailsBtn.addEventListener("click", openModal);
+  }
+
+  if (fab) {
+    fab.addEventListener("click", openModal);
+  }
+
+  // 4. Close Modal triggers (Header close icon, Got It button, Backdrop click)
+  if (modalCloseIcon) {
+    modalCloseIcon.addEventListener("click", closeModal);
+  }
+
+  if (modalGotItBtn) {
+    modalGotItBtn.addEventListener("click", closeModal);
+  }
+
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+  }
+});
+
+
 
 
 
